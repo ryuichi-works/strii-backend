@@ -23,7 +23,10 @@ class RedirectIfAuthenticated
 
         foreach ($guards as $guard) {
             if (Auth::guard($guard)->check()) {
-                return redirect(RouteServiceProvider::HOME);
+                // return redirect(RouteServiceProvider::HOME);
+                $user = Auth::user();
+                
+                return response()->json(['user'=> $user, 'message' =>'ログイン済みです'], 202);
             }
         }
 
