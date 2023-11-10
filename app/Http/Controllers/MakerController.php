@@ -13,4 +13,11 @@ class MakerController extends Controller
 
         return response()->json($makers, 200);
     }
+
+    public function show($id)
+    {
+        $maker = Maker::where('id', $id)->get();
+
+        return response()->json($maker, 200);
+    }
 }
