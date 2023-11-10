@@ -15,7 +15,12 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::get('/', function () {
-    return view('welcome');
+    return ['Laravel' => app()->version()];
 });
+
+// require __DIR__.'/auth.php';
+// require __DIR__.'/admin.php';
+// require __DIR__.'/admin/api.php';
+// require __DIR__.'/user/api.php';
 
 Route::apiResource('makers', MakerController::class);
