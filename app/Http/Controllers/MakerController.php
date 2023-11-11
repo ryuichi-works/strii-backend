@@ -32,4 +32,31 @@ class MakerController extends Controller
 
         return response()->json($maker, 200);
     }
+
+    public function update(Request $request, $id)
+    {
+        $validated_request = $request->validate([
+            'name_ja' => ['required','string', 'max:30' ],
+            'name_en' => ['string', 'max:30']
+        ]);
+        
+        try{
+            $maker = Maker::find($id);
+    
+            $maker->name_ja = $validated_request['name_ja'];
+            $maker->name_en = $validated_request['name_en'];
+    
+            $maker->save();
+    
+            return response()->json([
+                'messages' => 'completed updating maker',
+                'status' => 'ok'
+            ], 200);
+        }  catch (\Throwable $e) {
+            return response()->json([
+                'messages' => $e->getMessage(),
+                'status' => 'Bad Request'
+            ], 400);
+        }
+    }
 }
