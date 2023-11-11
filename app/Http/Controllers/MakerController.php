@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Maker;
+use App\Http\Requests\Maker\MakerStoreRequest;
+use App\Http\Requests\Maker\MakerUpdateRequest;
 
 class MakerController extends Controller
 {
@@ -36,31 +38,24 @@ class MakerController extends Controller
         }
     }
 
-    public function store(Request $request)
+    // public function store(Request $request)
+    public function store(MakerStoreRequest $request)
     {
-        $validated_request = $request->validate([
-            'name_ja' => ['required', 'string', 'max:30'],
-            'name_en' => ['string', 'max:30']
-        ]);
-
+        $validated_request = $request->validated();
         try {
             $maker = Maker::create($validated_request);
-            
+
             return response()->json($maker, 200);
         } catch (\Throwable $e) {
             \Log::error($e);
 
             throw $e;
         }
-
     }
 
-    public function update(Request $request, $id)
+    public function update(MakerUpdateRequest $request, $id)
     {
-        $validated_request = $request->validate([
-            'name_ja' => ['required', 'string', 'max:30'],
-            'name_en' => ['string', 'max:30']
-        ]);
+        $validated_request = $request->validated();
 
         try {
             $maker = Maker::findOrFail($id);
