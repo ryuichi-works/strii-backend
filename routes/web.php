@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\MakerController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -21,3 +22,6 @@ Route::get('/', function () {
 // require __DIR__.'/admin.php';
 // require __DIR__.'/admin/api.php';
 // require __DIR__.'/user/api.php';
+
+
+Route::apiResource('api/makers', MakerController::class);
