@@ -9,72 +9,97 @@ class MakerController extends Controller
 {
     public function index()
     {
-        $makers = Maker::all();
+        try {
+            $makers = Maker::all();
 
-        return response()->json($makers, 200);
+            return response()->json($makers, 200);
+        } catch (\Throwable $e) {
+            \Log::error($e);
+
+            throw $e;
+        }
     }
 
     public function show($id)
     {
-        $maker = Maker::where('id', $id)->get();
+        try {
+            $maker = Maker::findOrFail($id);
 
-        return response()->json($maker, 200);
+            return response()->json($maker, 200);
+        } catch (ModelNotFoundException $e) {
+            // データが見つからなかっただけならロギング不要
+            throw $e;
+        } catch (\Throwable $e) {
+            \Log::error($e);
+
+            throw $e;
+        }
     }
 
     public function store(Request $request)
     {
         $validated_request = $request->validate([
-            'name_ja' => ['required','string', 'max:30' ],
+            'name_ja' => ['required', 'string', 'max:30'],
             'name_en' => ['string', 'max:30']
         ]);
 
-        $maker = Maker::create($validated_request);
+        try {
+            $maker = Maker::create($validated_request);
+            
+            return response()->json($maker, 200);
+        } catch (\Throwable $e) {
+            \Log::error($e);
 
-        return response()->json($maker, 200);
+            throw $e;
+        }
+
     }
 
     public function update(Request $request, $id)
     {
         $validated_request = $request->validate([
-            'name_ja' => ['required','string', 'max:30' ],
+            'name_ja' => ['required', 'string', 'max:30'],
             'name_en' => ['string', 'max:30']
         ]);
-        
-        try{
-            $maker = Maker::find($id);
-    
+
+        try {
+            $maker = Maker::findOrFail($id);
+
             $maker->name_ja = $validated_request['name_ja'];
             $maker->name_en = $validated_request['name_en'];
-    
-            $maker->save();
-    
+
+            if(!$maker->save()) {
+                throw new Execption('failed saving data');
+            }
+
             return response()->json([
                 'messages' => 'completed updating maker',
                 'status' => 'ok'
             ], 200);
-        }  catch (\Throwable $e) {
-            return response()->json([
-                'messages' => $e->getMessage(),
-                'status' => 'Bad Request'
-            ], 400);
+        } catch (ModelNotFoundException $e) {
+            // データが見つからなかっただけならロギング不要
+            throw $e;
+        } catch (\Throwable $e) {
+            \Log::error($e);
+            
+            throw $e;
         }
     }
 
     public function destroy($id)
     {
         try {
-            $maker = Maker::find($id);
+            $maker = Maker::findOrFail($id);
             $maker->delete();
-    
+
             return response()->json([
-                'massages' => 'destroyed maker',
+                'massages' => 'deleted',
                 'status' => 'ok'
             ], 200);
         } catch (\Throwable $e) {
-            return response()->json([
-                'errors' => $e->getMessage(),
-                'status' => 'Bad request'
-            ], 400);
+            \Log::error($e);
+
+            throw $e;
         }
-    }   
+    }
 }
