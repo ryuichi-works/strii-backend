@@ -8,4 +8,9 @@ use Illuminate\Database\Eloquent\Model;
 class Maker extends Model
 {
     use HasFactory;
+
+    protected $fillable = [
+        'name_ja',
+        'name_en'
+    ];
 }
