@@ -59,4 +59,22 @@ class MakerController extends Controller
             ], 400);
         }
     }
+
+    public function destroy($id)
+    {
+        try {
+            $maker = Maker::find($id);
+            $maker->delete();
+    
+            return response()->json([
+                'massages' => 'destroyed maker',
+                'status' => 'ok'
+            ], 200);
+        } catch (\Throwable $e) {
+            return response()->json([
+                'errors' => $e->getMessage(),
+                'status' => 'Bad request'
+            ], 400);
+        }
+    }   
 }
