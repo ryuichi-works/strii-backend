@@ -1,6 +1,8 @@
 <?php
 
+use App\Http\Controllers\GutImageController;
 use App\Http\Controllers\MakerController;
+use App\Models\GutImage;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -25,3 +27,5 @@ Route::get('/', function () {
 
 
 Route::apiResource('api/makers', MakerController::class);
+
+Route::apiResource('api/gut_images', GutImageController::class);
