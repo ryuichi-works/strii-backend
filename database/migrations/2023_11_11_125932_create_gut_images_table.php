@@ -15,8 +15,8 @@ return new class extends Migration
     {
         Schema::create('gut_images', function (Blueprint $table) {
             $table->id();
-            $table->string('file_name', 100)->nullable(false)->unique(true);
-            $table->string('name', 30)->nullable(false);
+            $table->string('file_path', 70)->nullable(false)->unique(true);
+            $table->string('title', 30)->nullable(false);
             $table->timestamps();
         });
     }

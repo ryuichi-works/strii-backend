@@ -20,19 +20,7 @@ class GutImageController extends Controller
         try {
             $gut_images = GutImage::all();
 
-            $image_infos = [];
-
-            foreach($gut_images as $gut_image) {
-                $image_info = [
-                    'id' => $gut_image->id,
-                    'name' => $gut_image->name,
-                    'image_path' => self::BASE_IMAGE_PATH . $gut_image->file_name
-                ];
-                
-                array_push($image_infos, $image_info);
-            }
-
-            return response()->json($image_infos, 200);
+            return response()->json($gut_images, 200);
         } catch(\Throwable $e) {
             \Log::error($e);
 
