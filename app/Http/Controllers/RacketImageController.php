@@ -83,7 +83,21 @@ class RacketImageController extends Controller
      */
     public function show($id)
     {
-        //
+        try {
+            $racket_image = RacketImage::findOrFail($id);
+
+            return response()->json([
+                'id' => $racket_image['id'],
+                'file_path' => Storage::url($racket_image['file_path']),
+                'title' => $racket_image['title']
+            ]);
+        } catch (ModelNotFoundException $e) {
+            throw $e;
+        } catch (\Throwable $e) {
+            \Log::error($e);
+
+            throw $e;
+        }
     }
 
     /**
