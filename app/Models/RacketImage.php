@@ -8,4 +8,9 @@ use Illuminate\Database\Eloquent\Model;
 class RacketImage extends Model
 {
     use HasFactory;
+
+    protected $fillable = [
+        'file_path',
+        'title'
+    ];
 }
