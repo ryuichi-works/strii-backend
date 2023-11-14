@@ -17,9 +17,10 @@ class DatabaseSeeder extends Seeder
     public function run()
     {
         $this->call([
+            MakerSeeder::class,
             RacketImageSeeder::class,
             GutImageSeeder::class,
-            MakerSeeder::class,
+            GutSeeder::class,
             UserSeeder::class,
             AdminSeeder::class
         ]);
