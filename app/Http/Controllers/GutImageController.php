@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\GutImage;
 use Illuminate\Support\Facades\Storage;
 use App\Http\Requests\GutImage\GutImageStoreRequest;
+use App\Http\Requests\GutImage\GutImageUpdateRequest;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Throwable;
 
@@ -28,6 +29,7 @@ class GutImageController extends Controller
             //各imageのpathを整形して返却
             foreach ($gut_images as $image) {
                 $image_info = [
+                    'id' => $image->id,
                     'title' => $image->title,
                     'file_path' => Storage::url($image->file_path)
                 ];
@@ -91,6 +93,7 @@ class GutImageController extends Controller
             $gut_image = GutImage::findOrFail($id);
 
             return response()->json([
+                'id' => $gut_image['id'],
                 'file_path' => Storage::url($gut_image['file_path']),
                 'title' => $gut_image['title']
             ]);
@@ -110,9 +113,38 @@ class GutImageController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(GutImageUpdateRequest $request, $id)
     {
-        //
+        $validated_request = $request->validated();
+
+        try {
+            $image = GutImage::findOrFail($id);
+
+            //新しいファイルがあれば新たにstorageに登録
+            if($request->file('file')) {
+                $file = $request->file('file');
+                $filename = now()->format('YmdHis') . $validated_request['title'] . "." . $request->file('file')->extension();
+                $path = $file->storeAs('images/guts', $filename, 'public');
+    
+                //以前のイメージファイルをstorageフォルダから削除
+                Storage::disk('public')->delete($image->file_path);
+                
+                $image->file_path = $path;
+            }
+
+            $image->title = $validated_request['title'];
+            $image->save();
+
+            return response()->json([
+                'id' => $image['id'],
+                'file_path' => Storage::url($image['file_path']),
+                'title' => $image['title']
+            ], 200);
+        } catch (\Throwable $e) {
+            \Log::error($e);
+
+            return $e;
+        }
     }
 
     /**
