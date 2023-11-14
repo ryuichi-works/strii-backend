@@ -150,6 +150,20 @@ class RacketImageController extends Controller
      */
     public function destroy($id)
     {
-        //
+        try {
+            $image = RacketImage::findOrFail($id);
+
+            Storage::disk('public')->delete($image->file_path);
+
+            $image->delete();
+
+            return response()->json("{$image['title']}の画像を削除しました", 200);
+        } catch (ModelNotFoundException $e) {
+            throw $e;
+        } catch (\Throwable $e) {
+            \Log::error($e);
+
+            throw $e;
+        }
     }
 }
