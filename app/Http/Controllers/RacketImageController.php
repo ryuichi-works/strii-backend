@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\RacketImage\RacketImageStoreRequest;
+use App\Http\Requests\RacketImage\RacketImageUpdateRequest;
 use App\Models\RacketImage;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
@@ -107,9 +108,38 @@ class RacketImageController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(RacketImageUpdateRequest $request, $id)
     {
-        //
+        $validated_request = $request->validated();
+
+        try {
+            $image = RacketImage::findOrFail($id);
+
+            //新しいファイルがあれば新たにstorageに登録
+            if($request->file('file')) {
+                $file = $request->file('file');
+                $filename = now()->format('YmdHis') . $validated_request['title'] . "." . $request->file('file')->extension();
+                $path = $file->storeAs('images/guts', $filename, 'public');
+    
+                //以前のイメージファイルをstorageフォルダから削除
+                Storage::disk('public')->delete($image->file_path);
+                
+                $image->file_path = $path;
+            }
+
+            $image->title = $validated_request['title'];
+            $image->save();
+
+            return response()->json([
+                'id' => $image['id'],
+                'file_path' => Storage::url($image['file_path']),
+                'title' => $image['title']
+            ], 200);
+        } catch (\Throwable $e) {
+            \Log::error($e);
+
+            return $e;
+        }
     }
 
     /**
