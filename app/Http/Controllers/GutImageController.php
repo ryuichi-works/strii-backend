@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\GutImage;
 use Illuminate\Support\Facades\Storage;
 use App\Http\Requests\GutImage\GutImageStoreRequest;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Throwable;
 
 class GutImageController extends Controller
@@ -24,6 +25,7 @@ class GutImageController extends Controller
 
             $image_infos = [];
 
+            //各imageのpathを整形して返却
             foreach ($gut_images as $image) {
                 $image_info = [
                     'title' => $image->title,
@@ -85,7 +87,20 @@ class GutImageController extends Controller
      */
     public function show($id)
     {
-        //
+        try {
+            $gut_image = GutImage::findOrFail($id);
+
+            return response()->json([
+                'file_path' => Storage::url($gut_image['file_path']),
+                'title' => $gut_image['title']
+            ]);
+        } catch (ModelNotFoundException $e) {
+            throw $e;
+        } catch (Throwable $e) {
+            \Log::error($e);
+
+            throw $e;
+        }
     }
 
     /**
