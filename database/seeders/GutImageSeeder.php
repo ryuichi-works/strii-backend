@@ -30,12 +30,6 @@ class GutImageSeeder extends Seeder
                 'created_at' => Carbon::now(),
                 'updated_at' => Carbon::now()
             ],
-            // [
-            //     'file_name' => 'brast_black.jpg',
-            //     'name' => 'ブラストブラック',
-            //     'created_at' => Carbon::now(),
-            //     'updated_at' => Carbon::now()
-            // ],
         ]);
     }
 }

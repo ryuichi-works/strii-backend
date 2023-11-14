@@ -8,12 +8,9 @@ use Illuminate\Support\Facades\Storage;
 use App\Http\Requests\GutImage\GutImageStoreRequest;
 use App\Http\Requests\GutImage\GutImageUpdateRequest;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
-use Throwable;
 
 class GutImageController extends Controller
 {
-    // private const BASE_IMAGE_PATH = Storage::url('images/');
-    private const BASE_IMAGE_PATH = 'storage/images/guts/';
     /**
      * Display a listing of the resource.
      *
@@ -99,7 +96,7 @@ class GutImageController extends Controller
             ]);
         } catch (ModelNotFoundException $e) {
             throw $e;
-        } catch (Throwable $e) {
+        } catch (\Throwable $e) {
             \Log::error($e);
 
             throw $e;
@@ -165,7 +162,7 @@ class GutImageController extends Controller
             return response()->json("{$image['title']}の画像を削除しました", 200);
         } catch (ModelNotFoundException $e) {
             throw $e;
-        } catch (Throwable $e) {
+        } catch (\Throwable $e) {
             \Log::error($e);
 
             throw $e;
