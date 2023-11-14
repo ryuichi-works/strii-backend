@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\RacketImage;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class RacketImageController extends Controller
 {
@@ -13,7 +15,28 @@ class RacketImageController extends Controller
      */
     public function index()
     {
-        //
+        try {
+            $racket_images = RacketImage::all();
+
+            $image_infos = [];
+
+            //各imageのpathを整形して返却
+            foreach ($racket_images as $image) {
+                $image_info = [
+                    'id' => $image->id,
+                    'title' => $image->title,
+                    'file_path' => Storage::url($image->file_path)
+                ];
+
+                array_push($image_infos, $image_info);
+            }
+
+            return response()->json($image_infos, 200);
+        } catch (\Throwable $e) {
+            \Log::error($e);
+
+            return $e;
+        }
     }
 
     /**
