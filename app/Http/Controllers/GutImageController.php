@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\GutImage;
 use Illuminate\Support\Facades\Storage;
 use App\Http\Requests\GutImage\GutImageStoreRequest;
+use Throwable;
 
 class GutImageController extends Controller
 {
@@ -21,7 +22,18 @@ class GutImageController extends Controller
         try {
             $gut_images = GutImage::all();
 
-            return response()->json($gut_images, 200);
+            $image_infos = [];
+
+            foreach ($gut_images as $image) {
+                $image_info = [
+                    'title' => $image->title,
+                    'file_path' => Storage::url($image->file_path)
+                ];
+
+                array_push($image_infos, $image_info);
+            }
+
+            return response()->json($image_infos, 200);
         } catch (\Throwable $e) {
             \Log::error($e);
 
@@ -47,13 +59,16 @@ class GutImageController extends Controller
 
             $path = $file->storeAs('images/guts', $filename, 'public');
 
-            $gutImage = GutImage::create([
-                'file_path' => Storage::url($path),
+            $gut_image = GutImage::create([
+                'file_path' => $path,
                 'title' => $validated_request['title']
             ]);
 
-            if(isset($gutImage)) {
-                return response()->json($gutImage, 200);
+            if (isset($gut_image)) {
+                return response()->json([
+                    'file_path' => Storage::url($gut_image['file_path']),
+                    'title' => $gut_image['title']
+                ], 200);
             }
         } catch (\Throwable $e) {
             \Log::error($e);
@@ -93,6 +108,20 @@ class GutImageController extends Controller
      */
     public function destroy($id)
     {
-        //
+        try {
+            $image = GutImage::findOrFail($id);
+
+            Storage::disk('public')->delete($image->file_path);
+
+            $image->delete();
+
+            return response()->json("{$image['title']}の画像を削除しました", 200);
+        } catch (ModelNotFoundException $e) {
+            throw $e;
+        } catch (Throwable $e) {
+            \Log::error($e);
+
+            throw $e;
+        }
     }
 }
