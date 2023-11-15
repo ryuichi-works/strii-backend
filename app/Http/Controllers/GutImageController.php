@@ -11,6 +11,11 @@ use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 class GutImageController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('auth:admin')->except('store');
+    }
+    
     /**
      * Display a listing of the resource.
      *
