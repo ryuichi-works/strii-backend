@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\Gut\GutStoreRequest;
+use App\Http\Requests\Gut\GutUpdateRequest;
 use Illuminate\Http\Request;
 use App\Models\Gut;
 
@@ -83,9 +84,28 @@ class GutController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(GutUpdateRequest $request, $id)
     {
-        //
+        $validated = $request->validated();
+
+        try {
+            $gut = Gut::findOrFail($id);
+
+            $gut->name_ja = $validated['name_ja'];
+            $gut->name_en = $validated['name_en'];
+            $gut->maker_id = $validated['maker_id'];
+            $gut->image_id = isset($validated['image_id']) ? $validated['image_id'] : null;
+            $gut->need_posting_image = $validated['need_posting_image'];
+            if($gut->save()) {
+                return response()->json('ガット情報を更新しました', 200);
+            }
+        } catch(\ModelNotFoundException $e) {
+            throw $e;
+        } catch (\Throwable $e) {
+            \Log::error($e);
+
+            throw $e;
+        }
     }
 
     /**
