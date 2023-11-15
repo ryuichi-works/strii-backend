@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Models\Gut;
 
 class GutController extends Controller
 {
@@ -13,7 +14,15 @@ class GutController extends Controller
      */
     public function index()
     {
-        //
+        try {
+            $guts = Gut::with(['maker', 'gutImages'])->get();
+
+            return response()->json($guts, 200);
+        } catch (\Throwable $e) {
+            \Log::error($e);
+
+            throw $e;
+        }
     }
 
     /**
