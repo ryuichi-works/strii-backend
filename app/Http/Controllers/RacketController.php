@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Models\Racket;
 
 class RacketController extends Controller
 {
@@ -13,7 +14,15 @@ class RacketController extends Controller
      */
     public function index()
     {
-        //
+        try {
+            $rackets = Racket::with(['maker', 'racketImages'])->get();
+
+            return response()->json($rackets, 200);
+        } catch (\Throwable $e) {
+            \Log::error($e);
+
+            throw $e;
+        }
     }
 
     /**
