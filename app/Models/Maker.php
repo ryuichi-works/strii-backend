@@ -17,4 +17,9 @@ class Maker extends Model
     public function guts() {
         return $this->hasMany(Gut::class);
     }
+
+    public function rackets()
+    {
+        return $this->hasMany(Racket::class);
+    }
 }

@@ -13,4 +13,9 @@ class RacketImage extends Model
         'file_path',
         'title'
     ];
+
+    public function racket()
+    {
+        return $this->belongsTo(Racket::class, 'id','image_id');
+    }
 }
