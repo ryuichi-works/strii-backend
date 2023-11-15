@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Racket;
+use App\Http\Requests\Racket\RacketStoreRequest;
 
 class RacketController extends Controller
 {
@@ -31,9 +32,27 @@ class RacketController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(RacketStoreRequest $request)
     {
-        //
+        $validated = $request->validated();
+
+        try {
+            $racket = Racket::create([
+                'name_ja' => $validated['name_ja'],
+                'name_en' => $validated['name_en'],
+                'maker_id' => $validated['maker_id'],
+                'image_id' => isset($validated['image_id']) ? $validated['image_id'] : null,
+                'need_posting_image' => $validated['need_posting_image'],
+            ]);
+
+            if ($racket) {
+                return response()->json('ラケットを登録しました', 200);
+            }
+        } catch (\Throwable $e) {
+            \Log::error($e);
+
+            throw $e;
+        }
     }
 
     /**
