@@ -63,7 +63,17 @@ class RacketController extends Controller
      */
     public function show($id)
     {
-        //
+        try {
+            $racket = Racket::with(['maker', 'racketImages'])->findOrFail($id);
+
+            return response()->json($racket, 200);
+        } catch (\ModelNotFoundException $e) {
+            throw $e;
+        } catch (\Throwable $e) {
+            \Log::error($e);
+
+            throw $e;
+        }
     }
 
     /**
