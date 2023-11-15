@@ -13,4 +13,8 @@ class GutImage extends Model
         'file_path',
         'title'
     ];
+
+    public function gut() {
+        return $this->belongsTo(Gut::class, 'id','image_id');
+    }
 }

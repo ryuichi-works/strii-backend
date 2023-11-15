@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\GutController;
 use App\Http\Controllers\GutImageController;
 use App\Http\Controllers\MakerController;
 use App\Http\Controllers\RacketImageController;
@@ -32,3 +33,5 @@ Route::apiResource('api/makers', MakerController::class);
 Route::apiResource('api/gut_images', GutImageController::class);
 
 Route::apiResource('api/racket_images', RacketImageController::class);
+
+Route::apiResource('api/guts', GutController::class);
