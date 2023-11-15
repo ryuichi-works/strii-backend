@@ -3,6 +3,7 @@
 use App\Http\Controllers\GutController;
 use App\Http\Controllers\GutImageController;
 use App\Http\Controllers\MakerController;
+use App\Http\Controllers\RacketController;
 use App\Http\Controllers\RacketImageController;
 use App\Models\GutImage;
 use Illuminate\Support\Facades\Route;
@@ -35,3 +36,5 @@ Route::apiResource('api/gut_images', GutImageController::class);
 Route::apiResource('api/racket_images', RacketImageController::class);
 
 Route::apiResource('api/guts', GutController::class);
+
+Route::apiResource('api/rackets', RacketController::class);
