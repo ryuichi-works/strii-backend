@@ -116,6 +116,18 @@ class GutController extends Controller
      */
     public function destroy($id)
     {
-        //
+        try {
+            $gut = Gut::findOrFail($id);
+    
+            if($gut->delete()) {
+                return response()->json("{$gut->name_ja}を削除しました", 200);
+            }
+        } catch(\ModelNotFoundException $e) {
+            throw $e;
+        } catch(\Throwable $e) {
+            \Log::error($e);
+
+            throw $e;
+        }
     }
 }
