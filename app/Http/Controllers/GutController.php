@@ -62,8 +62,18 @@ class GutController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function show($id)
-    {
-        //
+    {   
+        try {
+            $gut = Gut::with(['maker', 'gutImages'])->findOrFail($id);
+    
+            return response()->json($gut, 200);
+        } catch(\ModelNotFoundException $e) {
+            throw $e;
+        } catch(\Throwable $e) {
+            \Log::error($e);
+
+            throw $e;
+        }
     }
 
     /**
