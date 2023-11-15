@@ -13,4 +13,8 @@ class Maker extends Model
         'name_ja',
         'name_en'
     ];
+
+    public function guts() {
+        return $this->hasMany(Gut::class);
+    }
 }

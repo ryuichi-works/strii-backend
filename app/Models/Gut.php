@@ -8,4 +8,12 @@ use Illuminate\Database\Eloquent\Model;
 class Gut extends Model
 {
     use HasFactory;
+
+    public function maker() {
+        return $this->belongsTo(Maker::class);
+    }
+
+    public function gutImages() {
+        return $this->hasMany(GutImage::class, 'id');
+    }
 }
