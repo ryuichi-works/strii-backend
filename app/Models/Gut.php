@@ -9,6 +9,14 @@ class Gut extends Model
 {
     use HasFactory;
 
+    protected $fillable = [
+        'name_ja',
+        'name_en',
+        'maker_id',
+        'image_id',
+        'need_posting_image'
+    ];
+
     public function maker() {
         return $this->belongsTo(Maker::class);
     }
