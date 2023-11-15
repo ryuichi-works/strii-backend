@@ -21,6 +21,7 @@ class DatabaseSeeder extends Seeder
             RacketImageSeeder::class,
             GutImageSeeder::class,
             GutSeeder::class,
+            RacketSeeder::class,
             UserSeeder::class,
             AdminSeeder::class
         ]);
