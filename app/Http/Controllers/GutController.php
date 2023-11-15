@@ -45,7 +45,7 @@ class GutController extends Controller
                 'image_id' => isset($validated['image_id']) ? $validated['image_id'] : null,
                 'need_posting_image' => $validated['need_posting_image'],
             ]);
-    
+
             if ($gut) {
                 return response()->json('ガットを登録しました', 200);
             }
@@ -63,14 +63,14 @@ class GutController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function show($id)
-    {   
+    {
         try {
             $gut = Gut::with(['maker', 'gutImages'])->findOrFail($id);
-    
+
             return response()->json($gut, 200);
-        } catch(\ModelNotFoundException $e) {
+        } catch (\ModelNotFoundException $e) {
             throw $e;
-        } catch(\Throwable $e) {
+        } catch (\Throwable $e) {
             \Log::error($e);
 
             throw $e;
@@ -96,10 +96,10 @@ class GutController extends Controller
             $gut->maker_id = $validated['maker_id'];
             $gut->image_id = isset($validated['image_id']) ? $validated['image_id'] : null;
             $gut->need_posting_image = $validated['need_posting_image'];
-            if($gut->save()) {
+            if ($gut->save()) {
                 return response()->json('ガット情報を更新しました', 200);
             }
-        } catch(\ModelNotFoundException $e) {
+        } catch (\ModelNotFoundException $e) {
             throw $e;
         } catch (\Throwable $e) {
             \Log::error($e);
@@ -118,13 +118,13 @@ class GutController extends Controller
     {
         try {
             $gut = Gut::findOrFail($id);
-    
-            if($gut->delete()) {
+
+            if ($gut->delete()) {
                 return response()->json("{$gut->name_ja}を削除しました", 200);
             }
-        } catch(\ModelNotFoundException $e) {
+        } catch (\ModelNotFoundException $e) {
             throw $e;
-        } catch(\Throwable $e) {
+        } catch (\Throwable $e) {
             \Log::error($e);
 
             throw $e;
