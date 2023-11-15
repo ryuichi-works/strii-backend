@@ -18,7 +18,7 @@ return new class extends Migration
             $table->string('name_ja', 30)->nullable(false);
             $table->string('name_en', 30);
             $table->foreignId('maker_id')->constrained('makers');
-            $table->foreignId('image_id')->constrained('gut_images');
+            $table->foreignId('image_id')->nullable()->constrained('gut_images');
             $table->boolean('need_posting_image')->nullable(false)->default(true);
             $table->timestamps();
         });
