@@ -54,7 +54,7 @@ class TennisProfileController extends Controller
             ]);
 
             if ($tennis_profile) {
-                return response()->json('テニスプロフィールと登録しました', 200);
+                return response()->json('テニスプロフィールを登録しました', 200);
             }
         } catch (\Throwable $e) {
             \Log::error($e);
