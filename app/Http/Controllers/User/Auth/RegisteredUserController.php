@@ -10,6 +10,8 @@ use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rules;
+use App\Models\TennisProfile;
+use Illuminate\Support\Facades\DB;
 
 class RegisteredUserController extends Controller
 {
@@ -26,16 +28,32 @@ class RegisteredUserController extends Controller
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
         ]);
 
-        $user = User::create([
-            'name' => $request->name,
-            'email' => $request->email,
-            'password' => Hash::make($request->password),
-        ]);
+        try {
+            DB::beginTransaction();
 
-        event(new Registered($user));
+            $user = User::create([
+                'name' => $request->name,
+                'email' => $request->email,
+                'password' => Hash::make($request->password),
+            ]);
 
-        Auth::guard('user')->login($user);
+            TennisProfile::create([
+                'user_id' => $user->id,
+            ]);
+            
+            event(new Registered($user));
 
-        return response()->noContent();
+            DB::commit();
+    
+            Auth::guard('user')->login($user);
+            
+            return response()->noContent();
+        } catch(\Throwable $e) {
+            DB::rollBack();
+
+            \Log::error($e);
+
+            return $e;
+        }
     }
 }
