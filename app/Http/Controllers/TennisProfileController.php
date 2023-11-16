@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Models\TennisProfile;
+use App\Http\Requests\TennisProfile\TennisProfileStoreRequest;
 
 class TennisProfileController extends Controller
 {
@@ -22,9 +24,34 @@ class TennisProfileController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(TennisProfileStoreRequest $request)
     {
-        //
+        $validated = $request->validated();
+
+        try {
+            $tennis_profile = TennisProfile::create([
+                'user_id'           => $validated['user_id'],
+                'gender'            => $validated['gender'],
+                'my_racket_id'      => empty($validated['my_racket_id']) ? null : $validated['my_racket_id'],
+                'grip_form'         => $validated['grip_form'],
+                'height'            => $validated['height'],
+                'age'               => $validated['age'],
+                'physique'          => $validated['physique'],
+                'experience_period' => $validated['experience_period'],
+                'frequency'         => $validated['frequency'],
+                'play_style'        => $validated['play_style'],
+                'favarit_shot'      => $validated['favarit_shot'],
+                'weak_shot'         => $validated['weak_shot'],
+            ]);
+
+            if ($tennis_profile) {
+                return response()->json('テニスプロフィールと登録しました', 200);
+            }
+        } catch (\Throwable $e) {
+            \Log::error($e);
+
+            return $e;
+        }
     }
 
     /**

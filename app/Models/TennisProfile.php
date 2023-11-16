@@ -9,6 +9,21 @@ class TennisProfile extends Model
 {
     use HasFactory;
 
+    protected $fillable = [
+        'user_id',
+        'gender',
+        'my_racket_id',
+        'grip_form',
+        'height',
+        'age',
+        'physique',
+        'experience_period',
+        'frequency',
+        'play_style',
+        'favarit_shot',
+        'weak_shot'
+    ];
+
     public function user()
     {
         return $this->belongsTo(User::class);
