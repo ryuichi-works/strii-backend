@@ -62,7 +62,17 @@ class TennisProfileController extends Controller
      */
     public function show($id)
     {
-        //
+        try {
+            $tennis_profile = TennisProfile::with(['user', 'racket'])->get();
+    
+            return response()->json($tennis_profile, 200);
+        } catch(\ModelNotFoundException $e) {
+            throw $e;
+        } catch(\Throwable $e) {
+            \Log::error($e);
+
+            throw $e;
+        }
     }
 
     /**
