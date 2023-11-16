@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\TennisProfile;
 use App\Http\Requests\TennisProfile\TennisProfileStoreRequest;
+use App\Http\Requests\TennisProfile\TennisProfileUpdateRequest;
 
 class TennisProfileController extends Controller
 {
@@ -64,11 +65,11 @@ class TennisProfileController extends Controller
     {
         try {
             $tennis_profile = TennisProfile::with(['user', 'racket'])->get();
-    
+
             return response()->json($tennis_profile, 200);
-        } catch(\ModelNotFoundException $e) {
+        } catch (\ModelNotFoundException $e) {
             throw $e;
-        } catch(\Throwable $e) {
+        } catch (\Throwable $e) {
             \Log::error($e);
 
             throw $e;
@@ -82,9 +83,35 @@ class TennisProfileController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(TennisProfileUpdateRequest $request, $id)
     {
-        //
+        $validated = $request->validated();
+        
+        try {
+            $tennis_profile = TennisProfile::findOrFail($id);
+
+            $tennis_profile->gender            = $validated['gender'];
+            $tennis_profile->my_racket_id      = empty($validated['my_racket_id']) ? null : $validated['my_racket_id'];
+            $tennis_profile->grip_form         = $validated['grip_form'];
+            $tennis_profile->height            = $validated['height'];
+            $tennis_profile->age               = $validated['age'];
+            $tennis_profile->physique          = $validated['physique'];
+            $tennis_profile->experience_period = $validated['experience_period'];
+            $tennis_profile->frequency         = $validated['frequency'];
+            $tennis_profile->play_style        = $validated['play_style'];
+            $tennis_profile->favarit_shot      = $validated['favarit_shot'];
+            $tennis_profile->weak_shot         = $validated['weak_shot'];
+
+            if ($tennis_profile->save()) {
+                return response()->json('テニスプロフィールを更新しました', 200);
+            }
+        } catch (\ModelNotFoundException $e) {
+            throw $e;
+        } catch (\Throwable $e) {
+            \Log::error($e);
+
+            return $e;
+        }
     }
 
     /**
