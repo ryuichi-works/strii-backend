@@ -15,7 +15,7 @@ return new class extends Migration
     {
         Schema::create('tennis_profiles', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->constrained('users')->cascadeOnDelete();
+            $table->foreignId('user_id')->unique()->constrained('users')->cascadeOnDelete();
             $table->string('gender', 15)->default('未設定');
             $table->foreignId('my_racket_id')->nullable()->constrained('rackets');
             $table->string('grip_form', 20)->default('未設定');
