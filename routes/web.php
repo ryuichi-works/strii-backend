@@ -5,6 +5,7 @@ use App\Http\Controllers\GutImageController;
 use App\Http\Controllers\MakerController;
 use App\Http\Controllers\RacketController;
 use App\Http\Controllers\RacketImageController;
+use App\Http\Controllers\TennisProfileController;
 use App\Models\GutImage;
 use Illuminate\Support\Facades\Route;
 
@@ -38,3 +39,5 @@ Route::apiResource('api/racket_images', RacketImageController::class);
 Route::apiResource('api/guts', GutController::class);
 
 Route::apiResource('api/rackets', RacketController::class);
+
+Route::apiResource('api/tennis_profiles', TennisProfileController::class);
