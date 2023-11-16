@@ -26,7 +26,7 @@ return new class extends Migration
             $table->string('frequency', 20)->default('未設定');
             $table->string('play_style', 20)->default('未設定');
             $table->string('favarit_shot', 20)->default('未設定');
-            $table->string('weak_shot', 20);
+            $table->string('weak_shot', 20)->default('未設定');
             $table->timestamps();
         });
     }
