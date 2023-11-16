@@ -31,4 +31,9 @@ class Racket extends Model
     {
         return $this->hasMany(TennisProfile::class, 'my_racket_id', 'id');
     }
+
+    public function myEquipments()
+    {
+        return $this->hasMany(MyEquipment::class);
+    }
 }

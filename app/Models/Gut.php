@@ -17,11 +17,23 @@ class Gut extends Model
         'need_posting_image'
     ];
 
-    public function maker() {
+    public function maker()
+    {
         return $this->belongsTo(Maker::class);
     }
 
-    public function gutImages() {
+    public function gutImages()
+    {
         return $this->hasMany(GutImage::class, 'id', 'image_id');
+    }
+
+    public function myEquipmentsWithMainGut()
+    {
+        return $this->hasMany(MyEquipment::class, 'main_gut_id', 'id');
+    }
+
+    public function myEquipmentsWithCrossGut()
+    {
+        return $this->hasMany(MyEquipment::class, 'cross_gut_id', 'id');
     }
 }
