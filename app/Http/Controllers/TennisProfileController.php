@@ -16,7 +16,15 @@ class TennisProfileController extends Controller
      */
     public function index()
     {
-        //
+        try {
+            $tennis_profiles = TennisProfile::with(['user', 'racket'])->get();
+
+            return response()->json($tennis_profiles, 200);
+        } catch (\Throwable $e) {
+            \Log::error($e);
+
+            throw $e;
+        }
     }
 
     /**
