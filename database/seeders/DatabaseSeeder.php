@@ -23,7 +23,8 @@ class DatabaseSeeder extends Seeder
             GutSeeder::class,
             RacketSeeder::class,
             UserSeeder::class,
-            AdminSeeder::class
+            AdminSeeder::class,
+            TennisProfileSeeder::class,
         ]);
 
         // \App\Models\User::factory(10)->create();
