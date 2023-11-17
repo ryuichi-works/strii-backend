@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Models\MyEquipment;
 
 class MyEquipmentController extends Controller
 {
@@ -13,7 +14,15 @@ class MyEquipmentController extends Controller
      */
     public function index()
     {
-        //
+        try {
+            $my_equipment = MyEquipment::with(['user', 'mainGut', 'crossGut'])->get();
+    
+            return response()->json($my_equipment, 200);
+        } catch (\Throwable $e) {
+            \Log::error($e);
+
+            throw $e;
+        }
     }
 
     /**
