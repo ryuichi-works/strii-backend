@@ -73,7 +73,17 @@ class MyEquipmentController extends Controller
      */
     public function show($id)
     {
-        //
+        try {
+            $my_equipment = MyEquipment::with(['user', 'mainGut', 'crossGut'])->findOrFail($id);
+    
+            return response()->json($my_equipment, 200);
+        } catch (\ModelNotFoundException $e) {
+            throw $e;
+        } catch (\Throwable $e) {
+            \Log::error($e);
+
+            throw $e;
+        }
     }
 
     /**
