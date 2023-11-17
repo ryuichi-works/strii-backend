@@ -9,6 +9,24 @@ class MyEquipment extends Model
 {
     use HasFactory;
 
+    protected $fillable = [
+        'user_id',
+        'user_height',
+        'user_age',
+        'experience_period',
+        'racket_id',
+        'stringing_way',
+        'main_gut_id',
+        'main_gut_guage',
+        'main_gut_tension',
+        'cross_gut_id',
+        'cross_gut_guage',
+        'cross_gut_tension',
+        'new_gut_date',
+        'change_gut_date',
+        'comment'
+    ];
+
     protected $table = 'my_equipments';
 
     public function user()
