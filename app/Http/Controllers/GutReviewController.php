@@ -75,7 +75,29 @@ class GutReviewController extends Controller
      */
     public function show($id)
     {
-        //
+        try {
+            $gut_review = GutReview::with([
+                'myEquipment' => [
+                    'user:id,name',
+                    'mainGut:id,name_ja,name_en,need_posting_image,maker_id,image_id' => [
+                        'maker:id,name_ja,name_en',
+                        'gutImages:id,file_path,title'
+                    ],
+                    'crossGut:id,name_ja,name_en,need_posting_image,maker_id,image_id' => [
+                        'maker:id,name_ja,name_en',
+                        'gutImages:id,file_path,title'
+                    ],
+                ]
+            ])->findOrFail($id);
+    
+            return response()->json($gut_review, 200);
+        } catch(\ModelNotFoundException $e) {
+            throw $e;
+        } catch(\Throwable $e) {
+            \Log::error($e);
+
+            throw $e;
+        }
     }
 
     /**
