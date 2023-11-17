@@ -134,6 +134,18 @@ class MyEquipmentController extends Controller
      */
     public function destroy($id)
     {
-        //
+        try {
+            $my_equipment = MyEquipment::findOrFail($id);
+    
+            $my_equipment->delete();
+    
+            return response()->json("id:{$my_equipment->id}のマイ装備を削除しました", 200);
+        } catch (ModelNotFoundException $e) {
+            throw $e;
+        } catch(\Throwable $e) {
+            \Log::error($e);
+
+            throw $e;
+        }
     }
 }
