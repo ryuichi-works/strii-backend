@@ -140,6 +140,18 @@ class GutReviewController extends Controller
      */
     public function destroy($id)
     {
-        //
+        try {
+            $gut_review = GutReview::findOrFail($id);
+
+            $gut_review->delete();
+
+            return response()->json("id:{$gut_review->id}のガットレビューを削除しました", 200);
+        } catch (\ModelNotFoundException $e) {
+            throw $e;
+        } catch (\Throwable $e) {
+            \Log::error($e);
+
+            throw $e;
+        }
     }
 }
