@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\MyEquipment;
 use App\Http\Requests\MyEquipment\MyEquipmentStoreRequest;
+use App\Http\Requests\MyEquipment\MyEquipmentUpdateRequest;
 
 class MyEquipmentController extends Controller
 {
@@ -93,9 +94,36 @@ class MyEquipmentController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(MyEquipmentUpdateRequest $request, $id)
     {
-        //
+        $validated = $request->validated();
+
+        try {
+            $my_equipment = MyEquipment::findOrFail($id);
+    
+            $my_equipment->user_height       = $validated['user_height'];
+            $my_equipment->user_age          = $validated['user_age'];
+            $my_equipment->experience_period = $validated['experience_period'];
+            $my_equipment->racket_id         = $validated['racket_id'];
+            $my_equipment->stringing_way     = $validated['stringing_way'];
+            $my_equipment->main_gut_id       = $validated['main_gut_id'];
+            $my_equipment->main_gut_guage    = $validated['main_gut_guage'];
+            $my_equipment->main_gut_tension  = $validated['main_gut_tension'];
+            $my_equipment->cross_gut_id      = $validated['cross_gut_id'];
+            $my_equipment->cross_gut_guage   = $validated['cross_gut_guage'];
+            $my_equipment->cross_gut_tension = $validated['cross_gut_tension'];
+            $my_equipment->new_gut_date      = $validated['new_gut_date'];
+            $my_equipment->change_gut_date   = empty($validated['change_gut_date']) ? null : $validated['change_gut_date'];
+            $my_equipment->comment           = empty($validated['comment']) ? '' : $validated['comment'];
+
+            if($my_equipment->save()) {
+                return response()->json('マイ装備の情報を更新しました', 200);
+            }
+        } catch (\Throwable $e) {
+            \Log::error($e);
+
+            throw $e;
+        }
     }
 
     /**
