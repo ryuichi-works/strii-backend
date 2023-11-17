@@ -119,6 +119,8 @@ class MyEquipmentController extends Controller
             if($my_equipment->save()) {
                 return response()->json('マイ装備の情報を更新しました', 200);
             }
+        } catch (ModelNotFoundException $e) {
+            throw $e;
         } catch (\Throwable $e) {
             \Log::error($e);
 
