@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\GutReview;
 use App\Http\Requests\GutReview\GutReviewStoreRequest;
+use App\Http\Requests\GutReview\GutReviewUpdateRequest;
 
 class GutReviewController extends Controller
 {
@@ -107,9 +108,28 @@ class GutReviewController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(GutReviewUpdateRequest $request, $id)
     {
-        //
+        $validated = $request->validated();
+
+        try {
+            $gut_review = GutReview::findOrFail($id);
+    
+            $gut_review->match_rate = $validated['match_rate'];
+            $gut_review->pysical_durability = $validated['pysical_durability'];
+            $gut_review->performance_durability = $validated['performance_durability'];
+            $gut_review->review = empty($validated['review']) ? '' : $validated['review'];
+    
+            if($gut_review->save()) {
+                return response()->json('ガットレビューを更新しました', 200);
+            } 
+        } catch (\ModelNotFoundException $e) {
+            throw $e;
+        } catch (\Throwable $e) {
+            \Log::error($e);
+
+            throw $e;
+        }
     }
 
     /**
