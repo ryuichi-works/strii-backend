@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\GutReview;
+use App\Http\Requests\GutReview\GutReviewStoreRequest;
 
 class GutReviewController extends Controller
 {
@@ -43,9 +44,27 @@ class GutReviewController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(GutReviewStoreRequest $request)
     {
-        //
+        $validated = $request->validated();
+        
+        try {
+            $gut_review = GutReview::create([
+                'equipment_id' => $validated['equipment_id'],
+                'match_rate' => $validated['match_rate'],
+                'pysical_durability' => $validated['pysical_durability'],
+                'performance_durability' => $validated['performance_durability'],
+                'review' => empty($validated['review']) ? '' : $validated['review']
+            ]);
+    
+            if($gut_review) {
+                return response()->json('ガットレビューを投稿しました', 200);
+            }
+        } catch(\Throwable $e) {
+            \Log::error($e);
+
+            throw $e;
+        }
     }
 
     /**
