@@ -5,6 +5,7 @@ namespace Database\Seeders;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 
 use App\Models\GutImage;
+use App\Models\MyEquipment;
 use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder
@@ -25,6 +26,7 @@ class DatabaseSeeder extends Seeder
             UserSeeder::class,
             AdminSeeder::class,
             TennisProfileSeeder::class,
+            MyEquipmentSeeder::class,
         ]);
 
         // \App\Models\User::factory(10)->create();

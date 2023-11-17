@@ -3,6 +3,7 @@
 use App\Http\Controllers\GutController;
 use App\Http\Controllers\GutImageController;
 use App\Http\Controllers\MakerController;
+use App\Http\Controllers\MyEquipmentController;
 use App\Http\Controllers\RacketController;
 use App\Http\Controllers\RacketImageController;
 use App\Http\Controllers\TennisProfileController;
@@ -41,3 +42,5 @@ Route::apiResource('api/guts', GutController::class);
 Route::apiResource('api/rackets', RacketController::class);
 
 Route::apiResource('api/tennis_profiles', TennisProfileController::class);
+
+Route::apiResource('api/my_equipments', MyEquipmentController::class);

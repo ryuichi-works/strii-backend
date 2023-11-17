@@ -46,4 +46,9 @@ class User extends Authenticatable
     {
         return $this->hasOne(TennisProfile::class);
     }
+
+    public function myEquipments()
+    {
+        return $this->hasMany(MyEquipment::class);
+    }
 }
