@@ -48,4 +48,9 @@ class MyEquipment extends Model
     {
         return $this->belongsTo(Gut::class, 'cross_gut_id', 'id');
     }
+
+    public function gutReviews()
+    {
+        return $this->hasMany(GutReview::class, 'equipment_id', 'id');
+    }
 }

@@ -8,4 +8,9 @@ use Illuminate\Database\Eloquent\Model;
 class GutReview extends Model
 {
     use HasFactory;
+
+    public function myEquipment()
+    {
+        return $this->belongsTo(MyEquipment::class,'equipment_id', 'id');
+    }
 }
