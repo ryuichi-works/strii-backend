@@ -8,6 +8,7 @@ use App\Http\Controllers\MyEquipmentController;
 use App\Http\Controllers\RacketController;
 use App\Http\Controllers\RacketImageController;
 use App\Http\Controllers\TennisProfileController;
+use App\Http\Controllers\User\UserController;
 use App\Models\GutImage;
 use Illuminate\Support\Facades\Route;
 
@@ -47,3 +48,5 @@ Route::apiResource('api/tennis_profiles', TennisProfileController::class);
 Route::apiResource('api/my_equipments', MyEquipmentController::class);
 
 Route::apiResource('api/gut_reviews', GutReviewController::class);
+
+Route::apiResource('api/users', UserController::class)->except('store');
