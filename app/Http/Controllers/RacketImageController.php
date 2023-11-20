@@ -10,6 +10,11 @@ use Illuminate\Support\Facades\Storage;
 
 class RacketImageController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('auth:admin')->only(['index', 'show', 'update', 'delete']);
+    }
+
     /**
      * Display a listing of the resource.
      *
