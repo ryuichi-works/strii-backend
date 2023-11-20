@@ -6,9 +6,15 @@ use Illuminate\Http\Request;
 use App\Models\Racket;
 use App\Http\Requests\Racket\RacketStoreRequest;
 use App\Http\Requests\Racket\RacketUpdateRequest;
+use Illuminate\Support\Facades\Auth;
 
 class RacketController extends Controller
 {
+    public function __construct()
+    {   
+        $this->middleware('auth:admin')->only(['store', 'update', 'destroy']);
+    }
+    
     /**
      * Display a listing of the resource.
      *
