@@ -9,6 +9,12 @@ use App\Http\Requests\MyEquipment\MyEquipmentUpdateRequest;
 
 class MyEquipmentController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('auth:user')->only(['store', 'show', 'update', 'delete']);
+        $this->middleware('auth:admin')->only('index');
+    }
+    
     /**
      * Display a listing of the resource.
      *
