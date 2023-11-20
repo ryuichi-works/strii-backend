@@ -33,7 +33,7 @@ Route::get('/', function () {
 // require __DIR__.'/user/api.php';
 
 
-Route::apiResource('api/makers', MakerController::class);
+Route::middleware('auth:admin')->apiResource('api/makers', MakerController::class);
 
 Route::apiResource('api/gut_images', GutImageController::class);
 
