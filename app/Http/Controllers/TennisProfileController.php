@@ -9,6 +9,12 @@ use App\Http\Requests\TennisProfile\TennisProfileUpdateRequest;
 
 class TennisProfileController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('auth:user')->only(['update', 'show']);
+        $this->middleware('auth:admin')->only('index');
+    }
+
     /**
      * Display a listing of the resource.
      *
