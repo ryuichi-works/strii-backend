@@ -24,11 +24,8 @@ class TennisProfileController extends Controller
     {
         try {
             $tennis_profiles = TennisProfile::with([
-                'user:id,name,email,file_path',
-                'racket:id,name_ja,name_en,need_posting_image,maker_id,image_id' => [
-                    'maker:id,name_ja,name_en',
-                    'racketImage:id,file_path,title'
-                ]
+                'user',
+                'racket' => ['maker', 'racketImage']
             ])->get();
 
             return response()->json($tennis_profiles, 200);
