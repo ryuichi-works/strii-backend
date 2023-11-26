@@ -23,7 +23,10 @@ class TennisProfileController extends Controller
     public function index()
     {
         try {
-            $tennis_profiles = TennisProfile::with(['user', 'racket'])->get();
+            $tennis_profiles = TennisProfile::with([
+                'user',
+                'racket' => ['maker', 'racketImage']
+            ])->get();
 
             return response()->json($tennis_profiles, 200);
         } catch (\Throwable $e) {
@@ -78,7 +81,10 @@ class TennisProfileController extends Controller
     public function show($id)
     {
         try {
-            $tennis_profile = TennisProfile::with(['user', 'racket'])->findOrFail($id);
+            $tennis_profile = TennisProfile::with([
+                'user',
+                'racket' => ['maker', 'racketImage']
+            ])->findOrFail($id);
 
             return response()->json($tennis_profile, 200);
         } catch (\ModelNotFoundException $e) {
