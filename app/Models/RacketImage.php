@@ -14,7 +14,7 @@ class RacketImage extends Model
         'title'
     ];
 
-    public function racket()
+    public function rackets()
     {
         return $this->hasMany(Racket::class, 'image_id','id');
     }

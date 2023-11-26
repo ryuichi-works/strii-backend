@@ -22,7 +22,7 @@ class Racket extends Model
         return $this->belongsTo(Maker::class);
     }
 
-    public function racketImages()
+    public function racketImage()
     {
         return $this->belongsTo(RacketImage::class,  'image_id', 'id');
     }

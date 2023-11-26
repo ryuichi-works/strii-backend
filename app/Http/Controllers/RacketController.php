@@ -23,7 +23,7 @@ class RacketController extends Controller
     public function index()
     {
         try {
-            $rackets = Racket::with(['maker', 'racketImages'])->get();
+            $rackets = Racket::with(['maker', 'racketImage'])->get();
 
             return response()->json($rackets, 200);
         } catch (\Throwable $e) {
@@ -71,7 +71,7 @@ class RacketController extends Controller
     public function show($id)
     {
         try {
-            $racket = Racket::with(['maker', 'racketImages'])->findOrFail($id);
+            $racket = Racket::with(['maker', 'racketImage'])->findOrFail($id);
 
             return response()->json($racket, 200);
         } catch (\ModelNotFoundException $e) {
