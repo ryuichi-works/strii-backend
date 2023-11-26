@@ -25,7 +25,7 @@ class TennisProfileUpdateRequest extends FormRequest
     {
         return [
             'gender'            => ['required', 'string', 'max:15'],
-            'my_racket_id'      => ['sometimes', 'integer', 'exists:rackets,id'],
+            'my_racket_id'      => ['nullable', 'integer', 'exists:rackets,id'],
             'grip_form'         => ['required', 'string', 'max:15'],
             'height'            => ['required', 'string', 'max:20'],
             'age'               => ['required', 'string', 'max:15'],
