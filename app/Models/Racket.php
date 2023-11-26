@@ -24,7 +24,7 @@ class Racket extends Model
 
     public function racketImages()
     {
-        return $this->hasMany(RacketImage::class, 'id', 'image_id');
+        return $this->belongsTo(RacketImage::class,  'image_id', 'id');
     }
 
     public function tennisProfiles()
