@@ -24,7 +24,7 @@ class Gut extends Model
 
     public function gutImages()
     {
-        return $this->hasMany(GutImage::class, 'id', 'image_id');
+        return $this->belongsTo(GutImage::class, 'image_id', 'id');
     }
 
     public function myEquipmentsWithMainGut()
