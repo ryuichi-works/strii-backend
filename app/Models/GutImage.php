@@ -14,7 +14,7 @@ class GutImage extends Model
         'title'
     ];
 
-    public function gut() {
-        return $this->belongsTo(Gut::class, 'id','image_id');
+    public function guts() {
+        return $this->hasMany(Gut::class, 'image_id', 'id');
     }
 }

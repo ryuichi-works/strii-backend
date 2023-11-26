@@ -22,11 +22,11 @@ class GutReviewController extends Controller
                     'user:id,name',
                     'mainGut:id,name_ja,name_en,need_posting_image,maker_id,image_id' => [
                         'maker:id,name_ja,name_en',
-                        'gutImages:id,file_path,title'
+                        'gutImage:id,file_path,title'
                     ],
                     'crossGut:id,name_ja,name_en,need_posting_image,maker_id,image_id' => [
                         'maker:id,name_ja,name_en',
-                        'gutImages:id,file_path,title'
+                        'gutImage:id,file_path,title'
                     ],
                 ]
             ])->get();
@@ -82,11 +82,11 @@ class GutReviewController extends Controller
                     'user:id,name',
                     'mainGut:id,name_ja,name_en,need_posting_image,maker_id,image_id' => [
                         'maker:id,name_ja,name_en',
-                        'gutImages:id,file_path,title'
+                        'gutImage:id,file_path,title'
                     ],
                     'crossGut:id,name_ja,name_en,need_posting_image,maker_id,image_id' => [
                         'maker:id,name_ja,name_en',
-                        'gutImages:id,file_path,title'
+                        'gutImage:id,file_path,title'
                     ],
                 ]
             ])->findOrFail($id);

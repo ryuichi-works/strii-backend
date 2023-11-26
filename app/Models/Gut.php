@@ -22,9 +22,9 @@ class Gut extends Model
         return $this->belongsTo(Maker::class);
     }
 
-    public function gutImages()
+    public function gutImage()
     {
-        return $this->hasMany(GutImage::class, 'id', 'image_id');
+        return $this->belongsTo(GutImage::class, 'image_id', 'id');
     }
 
     public function myEquipmentsWithMainGut()
