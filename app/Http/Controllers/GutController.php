@@ -22,7 +22,7 @@ class GutController extends Controller
     public function index()
     {
         try {
-            $guts = Gut::with(['maker', 'gutImages'])->get();
+            $guts = Gut::with(['maker', 'gutImage'])->get();
 
             return response()->json($guts, 200);
         } catch (\Throwable $e) {
@@ -70,7 +70,7 @@ class GutController extends Controller
     public function show($id)
     {
         try {
-            $gut = Gut::with(['maker', 'gutImages'])->findOrFail($id);
+            $gut = Gut::with(['maker', 'gutImage'])->findOrFail($id);
 
             return response()->json($gut, 200);
         } catch (\ModelNotFoundException $e) {

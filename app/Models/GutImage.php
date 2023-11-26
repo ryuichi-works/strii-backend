@@ -14,7 +14,7 @@ class GutImage extends Model
         'title'
     ];
 
-    public function gut() {
+    public function guts() {
         return $this->hasMany(Gut::class, 'image_id', 'id');
     }
 }
