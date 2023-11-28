@@ -74,7 +74,7 @@ class GutReviewController extends Controller
         try {
             $gut_review = GutReview::with([
                 'myEquipment' => [
-                    'user',
+                    'user' => ['tennisProfile'],
                     'racket' => ['maker', 'racketImage'],
                     'mainGut' => ['maker', 'gutImage'],
                     'crossGut' => ['maker', 'gutImage'],
