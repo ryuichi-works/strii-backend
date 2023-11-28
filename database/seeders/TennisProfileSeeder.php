@@ -19,7 +19,7 @@ class TennisProfileSeeder extends Seeder
         DB::table('tennis_profiles')->insert([
             [
                 'user_id' => 1,
-                'gender' => 'male',
+                'gender' => '男',
                 'my_racket_id' => 1,
                 'grip_form' => 'ウエスタン',
                 'height' => '普通',
@@ -35,11 +35,27 @@ class TennisProfileSeeder extends Seeder
             ],
             [
                 'user_id' => 2,
-                'gender' => 'female',
+                'gender' => '女',
                 'my_racket_id' => 1,
                 'grip_form' => 'フルウエスタン',
                 'height' => 'やや小柄',
                 'age' => '20代前半',
+                'physique' => '普通',
+                'experience_period' => 3,
+                'frequency' => '月2回',
+                'play_style' => 'オールラウンダー',
+                'favarit_shot' => 'フォアハンド',
+                'weak_shot' => 'バックハンド',
+                'created_at' => Carbon::now(),
+                'updated_at' => Carbon::now()
+            ],
+            [
+                'user_id' => 3,
+                'gender' => '男',
+                'my_racket_id' => 1,
+                'grip_form' => 'フルウエスタン',
+                'height' => 'やや小柄',
+                'age' => '40代前半',
                 'physique' => '普通',
                 'experience_period' => 3,
                 'frequency' => '月2回',
