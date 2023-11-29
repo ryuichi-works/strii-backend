@@ -46,6 +46,12 @@ Route::apiResource('api/rackets', RacketController::class);
 Route::apiResource('api/tennis_profiles', TennisProfileController::class);
 
 Route::apiResource('api/my_equipments', MyEquipmentController::class);
+Route::get('/api/my_equipments/user/{id}', [ MyEquipmentController::class, 'getAllEquipmentOfUser']);
+
+// Route::group(function() {
+//     Route::apiResource('api/my_equipments', MyEquipmentController::class);
+//     Route::get('api/my_equipments/user/{userId}', [ MyEquipmentController::class, 'getAllEquipmentOfUser']);
+// });
 
 Route::apiResource('api/gut_reviews', GutReviewController::class);
 
