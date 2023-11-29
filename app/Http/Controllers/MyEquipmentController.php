@@ -11,10 +11,10 @@ class MyEquipmentController extends Controller
 {
     public function __construct()
     {
-        $this->middleware('auth:user')->only(['store', 'show', 'update', 'delete']);
-        $this->middleware('auth:admin')->only('index');
+        // $this->middleware('auth:user')->only(['store', 'show', 'update', 'delete', 'getAllEquipmentOfUser']);
+        // $this->middleware('auth:admin')->only('index');
     }
-    
+
     /**
      * Display a listing of the resource.
      *
@@ -24,7 +24,7 @@ class MyEquipmentController extends Controller
     {
         try {
             $my_equipment = MyEquipment::with(['user', 'mainGut', 'crossGut'])->get();
-    
+
             return response()->json($my_equipment, 200);
         } catch (\Throwable $e) {
             \Log::error($e);
@@ -61,11 +61,11 @@ class MyEquipmentController extends Controller
                 'change_gut_date'   => empty($validated['change_gut_date']) ? null : $validated['change_gut_date'],
                 'comment'           => empty($validated['comment']) ? '' : $validated['comment']
             ]);
-    
-            if($my_equipment) {
+
+            if ($my_equipment) {
                 return response()->json('マイ装備を追加しました。', 200);
             }
-        } catch(\Throwable $e) {
+        } catch (\Throwable $e) {
             \Log::error($e);
 
             throw $e;
@@ -82,7 +82,7 @@ class MyEquipmentController extends Controller
     {
         try {
             $my_equipment = MyEquipment::with(['user', 'mainGut', 'crossGut'])->findOrFail($id);
-    
+
             return response()->json($my_equipment, 200);
         } catch (\ModelNotFoundException $e) {
             throw $e;
@@ -106,7 +106,7 @@ class MyEquipmentController extends Controller
 
         try {
             $my_equipment = MyEquipment::findOrFail($id);
-    
+
             $my_equipment->user_height       = $validated['user_height'];
             $my_equipment->user_age          = $validated['user_age'];
             $my_equipment->experience_period = $validated['experience_period'];
@@ -122,7 +122,7 @@ class MyEquipmentController extends Controller
             $my_equipment->change_gut_date   = empty($validated['change_gut_date']) ? null : $validated['change_gut_date'];
             $my_equipment->comment           = empty($validated['comment']) ? '' : $validated['comment'];
 
-            if($my_equipment->save()) {
+            if ($my_equipment->save()) {
                 return response()->json('マイ装備の情報を更新しました', 200);
             }
         } catch (ModelNotFoundException $e) {
@@ -144,13 +144,38 @@ class MyEquipmentController extends Controller
     {
         try {
             $my_equipment = MyEquipment::findOrFail($id);
-    
+
             $my_equipment->delete();
-    
+
             return response()->json("id:{$my_equipment->id}のマイ装備を削除しました", 200);
         } catch (ModelNotFoundException $e) {
             throw $e;
-        } catch(\Throwable $e) {
+        } catch (\Throwable $e) {
+            \Log::error($e);
+
+            throw $e;
+        }
+    }
+
+    /**
+     * Display the specified resource.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function getAllEquipmentOfUser($id)
+    {
+        try {
+            $user_equipments = MyEquipment::where('user_id', '=', $id)->with([
+                'user',
+                'racket' => ['maker', 'racketImage'],
+                'mainGut' => ['maker', 'gutImage'],
+                'crossGut' => ['maker', 'gutImage']
+            ])->get();
+            // $user_equipments = MyEquipment::where('user_id', '=', $id)->get();
+
+            return response()->json($user_equipments, 200);
+        } catch (\Throwable $e) {
             \Log::error($e);
 
             throw $e;
