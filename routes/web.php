@@ -40,6 +40,7 @@ Route::apiResource('api/gut_images', GutImageController::class);
 Route::apiResource('api/racket_images', RacketImageController::class);
 
 Route::apiResource('api/guts', GutController::class);
+Route::get('api/guts/{id}/others', [GutController::class, 'getRandamOtherGuts']);
 
 Route::apiResource('api/rackets', RacketController::class);
 
