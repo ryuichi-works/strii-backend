@@ -81,7 +81,12 @@ class MyEquipmentController extends Controller
     public function show($id)
     {
         try {
-            $my_equipment = MyEquipment::with(['user', 'mainGut', 'crossGut'])->findOrFail($id);
+            $my_equipment = MyEquipment::with([
+                'user',
+                'racket' => ['maker', 'racketImage'],
+                'mainGut' => ['maker', 'gutImage'],
+                'crossGut' => ['maker', 'gutImage']
+            ])->findOrFail($id);
 
             return response()->json($my_equipment, 200);
         } catch (\ModelNotFoundException $e) {
