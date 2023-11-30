@@ -10,10 +10,10 @@ use App\Models\Gut;
 class GutController extends Controller
 {
     public function __construct()
-    {   
+    {
         $this->middleware('auth:admin')->only(['store', 'update', 'destroy']);
     }
-    
+
     /**
      * Display a listing of the resource.
      *
@@ -134,5 +134,40 @@ class GutController extends Controller
 
             throw $e;
         }
+    }
+
+    public function getRandamOtherGuts(Request $request, $id)
+    {
+        // 取得するgutデータの数を指定
+        $count = $request->query('count');
+
+        // $otherGuts = Gut::where('id', '!=', $id)->get();
+        $otherGuts = Gut::where('id', '!=', $id)->with(['gutImage', 'maker'])->get();
+
+        // othergutsからランダムにデータを取り出すためのランダムindexの配列を生成
+        $randomIndexes = [];
+        for ($i = 0; $i < $count; $i++) {
+            while (true) {
+                // /** otherGutsの配列の中身の数を元に一時的な乱数を作成 */
+                $num = mt_rand(0, count($otherGuts) - 1);
+
+                // randomIndexesに含まれているならwhile続行、含まれてないなら配列に代入してbreak            
+                if (!in_array($num, $randomIndexes)) {
+                    array_push($randomIndexes, $num);
+                    break;
+                }
+            }
+        }
+
+        //responseGutsが整列されるようにrandomIndexesを整列
+        sort($randomIndexes, SORT_ASC);
+
+        // 生成されたrandumndexesを元に取り出したgut情報をresponseGutsにそれぞれ格納
+        $responseGuts = [];
+        foreach ($randomIndexes as $index) {
+            array_push($responseGuts, $otherGuts[$index]);
+        }
+
+        return response()->json($responseGuts, 200);
     }
 }
