@@ -43,6 +43,7 @@ Route::apiResource('api/guts', GutController::class);
 Route::get('api/guts/{id}/others', [GutController::class, 'getRandamOtherGuts']);
 
 Route::apiResource('api/rackets', RacketController::class);
+Route::get('api/rackets/{id}/others', [RacketController::class, 'getRandamOtherRackets']);
 
 Route::apiResource('api/tennis_profiles', TennisProfileController::class);
 

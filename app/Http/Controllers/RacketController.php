@@ -137,4 +137,38 @@ class RacketController extends Controller
             throw $e;
         }
     }
+
+    public function getRandamOtherRackets(Request $request, $id)
+    {
+        // 取得するracketデータの数を指定
+        $count = $request->query('count');
+
+        $otherRackets = Racket::where('id', '!=', $id)->with(['racketImage', 'maker'])->get();
+
+        // otherRacketsからランダムにデータを取り出すためのランダムindexの配列を生成
+        $randomIndexes = [];
+        for ($i = 0; $i < $count; $i++) {
+            while (true) {
+                // /** otherRacketsの配列の中身の数を元に一時的な乱数を作成 */
+                $num = mt_rand(0, count($otherRackets) - 1);
+
+                // randomIndexesに含まれているならwhile続行、含まれてないなら配列に代入してbreak            
+                if (!in_array($num, $randomIndexes)) {
+                    array_push($randomIndexes, $num);
+                    break;
+                }
+            }
+        }
+
+        //responseRacketsが整列されるようにrandomIndexesを整列
+        sort($randomIndexes, SORT_ASC);
+
+        // 生成されたrandumndexesを元に取り出したracket情報をresponseRacketsにそれぞれ格納
+        $responseRackets = [];
+        foreach ($randomIndexes as $index) {
+            array_push($responseRackets, $otherRackets[$index]);
+        }
+
+        return response()->json($responseRackets, 200);
+    }
 }
