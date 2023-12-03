@@ -170,4 +170,48 @@ class GutController extends Controller
 
         return response()->json($responseGuts, 200);
     }
+
+    public function gutSearch(Request $request)
+    {
+        $severalWords = $request->query('several_words');
+
+        if ($severalWords) {
+            //全角スペースを半角に変換
+            $spaceConversion = mb_convert_kana($severalWords, 's');
+
+            // 単語を半角スペースで区切り、配列にする（例："山田 翔" → ["山田", "翔"]）
+            $severalWordsArray = preg_split('/[\s,]+/', $spaceConversion, -1, PREG_SPLIT_NO_EMPTY);
+        }
+
+        $maker_id = $request->query('maker');
+
+        $gutQuery = Gut::query();
+
+        if ($severalWords && $maker_id) {
+            foreach ($severalWordsArray as $word) {
+                //severalWordsで複数取れてきてもmakerが一致しない場合は弾かれる
+                $gutQuery
+                    ->where('maker_id', '=', $maker_id)
+                    ->where(function () use ($word, $gutQuery) {
+                        $gutQuery
+                            ->Where('name_ja', 'like', '%' . $word . '%')
+                            ->orWhere('name_en', 'like', '%' . $word . '%');
+                    });
+            }
+        } elseif ($severalWords && empty($maker_id)) {
+            //makerの指定がないのでseveralWordsのor検索となる
+            foreach ($severalWordsArray as $word) {
+                $gutQuery
+                    ->Where('name_ja', 'like', '%' . $word . '%')
+                    ->orWhere('name_en', 'like', '%' . $word . '%');
+            }
+        } elseif (empty($severalWords) && $maker_id) {
+            //makerのみでの検索
+            $gutQuery->where('maker_id', '=', $maker_id);
+        }
+
+        $searchedGuts = $gutQuery->with(['maker', 'gutImage'])->get();
+
+        return response()->json($searchedGuts, 200);
+    }
 }
