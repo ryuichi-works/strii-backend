@@ -11,10 +11,10 @@ use Illuminate\Support\Facades\Auth;
 class RacketController extends Controller
 {
     public function __construct()
-    {   
+    {
         $this->middleware('auth:admin')->only(['store', 'update', 'destroy']);
     }
-    
+
     /**
      * Display a listing of the resource.
      *
@@ -170,5 +170,54 @@ class RacketController extends Controller
         }
 
         return response()->json($responseRackets, 200);
+    }
+
+
+
+    public function racketSearch(Request $request)
+    {
+        $severalWords = $request->query('several_words');
+
+        if ($severalWords) {
+            //全角スペースを半角に変換
+            $spaceConversion = mb_convert_kana($severalWords, 's');
+
+            // 単語を半角スペースで区切り、配列にする（例："山田 翔" → ["山田", "翔"]）
+            $severalWordsArray = preg_split('/[\s,]+/', $spaceConversion, -1, PREG_SPLIT_NO_EMPTY);
+        }
+
+        $maker_id = $request->query('maker');
+
+        $racketQuery = Racket::query();
+
+        if ($severalWords && $maker_id) {
+            foreach ($severalWordsArray as $word) {
+                //severalWordsで複数取れてきてもmakerが一致しない場合は弾かれる
+                $racketQuery
+                    ->orWhere(function ($racketQuery) use ($word, $maker_id) {
+                        $racketQuery
+                            ->where(function ($racketQuery) use ($word, $maker_id) {
+                                $racketQuery
+                                    ->orWhere('name_ja', 'like', '%' . $word . '%')
+                                    ->orWhere('name_en', 'like', '%' . $word . '%');
+                            })
+                            ->where('maker_id', '=', $maker_id);
+                    });
+            }
+        } elseif ($severalWords && empty($maker_id)) {
+            //makerの指定がないのでseveralWordsのor検索となる
+            foreach ($severalWordsArray as $word) {
+                $racketQuery
+                    ->orWhere('name_ja', 'like', '%' . $word . '%')
+                    ->orWhere('name_en', 'like', '%' . $word . '%');
+            }
+        } elseif (empty($severalWords) && $maker_id) {
+            //makerのみでの検索
+            $racketQuery->where('maker_id', '=', $maker_id);
+        }
+
+        $searchedRackets = $racketQuery->with(['maker', 'racketImage'])->get();
+
+        return response()->json($searchedRackets, 200);
     }
 }

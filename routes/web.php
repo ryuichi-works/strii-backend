@@ -43,6 +43,7 @@ Route::get('api/guts/search', [GutController::class, 'gutSearch']);
 Route::apiResource('api/guts', GutController::class);
 Route::get('api/guts/{id}/others', [GutController::class, 'getRandamOtherGuts']);
 
+Route::get('api/rackets/search', [RacketController::class, 'racketSearch']);
 Route::apiResource('api/rackets', RacketController::class);
 Route::get('api/rackets/{id}/others', [RacketController::class, 'getRandamOtherRackets']);
 
