@@ -191,18 +191,21 @@ class GutController extends Controller
             foreach ($severalWordsArray as $word) {
                 //severalWordsで複数取れてきてもmakerが一致しない場合は弾かれる
                 $gutQuery
-                    ->where('maker_id', '=', $maker_id)
-                    ->where(function () use ($word, $gutQuery) {
+                    ->orWhere(function ($gutQuery) use ($word, $maker_id) {
                         $gutQuery
-                            ->Where('name_ja', 'like', '%' . $word . '%')
-                            ->orWhere('name_en', 'like', '%' . $word . '%');
+                            ->where(function ($gutQuery) use ($word) {
+                                $gutQuery
+                                    ->orWhere('name_ja', 'like', '%' . $word . '%')
+                                    ->orWhere('name_en', 'like', '%' . $word . '%');
+                            })
+                            ->where('maker_id', '=', $maker_id);
                     });
             }
         } elseif ($severalWords && empty($maker_id)) {
             //makerの指定がないのでseveralWordsのor検索となる
             foreach ($severalWordsArray as $word) {
                 $gutQuery
-                    ->Where('name_ja', 'like', '%' . $word . '%')
+                    ->orWhere('name_ja', 'like', '%' . $word . '%')
                     ->orWhere('name_en', 'like', '%' . $word . '%');
             }
         } elseif (empty($severalWords) && $maker_id) {
