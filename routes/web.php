@@ -35,6 +35,7 @@ Route::get('/', function () {
 
 Route::middleware('auth:admin')->apiResource('api/makers', MakerController::class);
 
+Route::get('api/gut_images/search', [GutImageController::class, 'gutImageSearch']);
 Route::apiResource('api/gut_images', GutImageController::class);
 
 Route::apiResource('api/racket_images', RacketImageController::class);
