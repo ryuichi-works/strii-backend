@@ -210,7 +210,7 @@ class GutImageController extends Controller
             $gutImageQuery->where('maker_id', '=', $maker_id);
         }
 
-        $searchedGutImages = $gutImageQuery->get();
+        $searchedGutImages = $gutImageQuery->with('maker')->get();
 
         return response()->json($searchedGutImages, 200);
     }
