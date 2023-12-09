@@ -22,4 +22,9 @@ class Maker extends Model
     {
         return $this->hasMany(Racket::class);
     }
+
+    public function gutImages()
+    {
+        return $this->hasMany(GutImage::class);
+    }
 }

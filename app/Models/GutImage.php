@@ -17,4 +17,8 @@ class GutImage extends Model
     public function guts() {
         return $this->hasMany(Gut::class, 'image_id', 'id');
     }
+
+    public function maker() {
+        return $this->belongsTo(Maker::class);
+    }
 }
