@@ -6,6 +6,7 @@ use App\Http\Requests\Gut\GutStoreRequest;
 use App\Http\Requests\Gut\GutUpdateRequest;
 use Illuminate\Http\Request;
 use App\Models\Gut;
+use App\Models\GutImage;
 
 class GutController extends Controller
 {
@@ -42,12 +43,16 @@ class GutController extends Controller
     {
         $validated = $request->validated();
 
+        if(empty($validated['image_id'])) {
+            $defaultgutImage = GutImage::where('file_path', '=', 'images/guts/default_gut_image.jpg')->get()[0];
+        }
+
         try {
             $gut = Gut::create([
                 'name_ja' => $validated['name_ja'],
                 'name_en' => $validated['name_en'],
                 'maker_id' => $validated['maker_id'],
-                'image_id' => isset($validated['image_id']) ? $validated['image_id'] : null,
+                'image_id' => isset($validated['image_id']) ? $validated['image_id'] : $defaultgutImage->id,
                 'need_posting_image' => $validated['need_posting_image'],
             ]);
 
@@ -92,6 +97,8 @@ class GutController extends Controller
     public function update(GutUpdateRequest $request, $id)
     {
         $validated = $request->validated();
+
+        
 
         try {
             $gut = Gut::findOrFail($id);
