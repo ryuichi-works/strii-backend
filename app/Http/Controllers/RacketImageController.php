@@ -171,4 +171,45 @@ class RacketImageController extends Controller
             throw $e;
         }
     }
+
+    public function racketImageSearch(Request $request)
+    {
+        $severalWords = $request->query('several_words');
+
+        if ($severalWords) {
+            //全角スペースを半角に変換
+            $spaceConversion = mb_convert_kana($severalWords, 's');
+
+            // 単語を半角スペースで区切り、配列にする（例："山田 翔" → ["山田", "翔"]）
+            $severalWordsArray = preg_split('/[\s,]+/', $spaceConversion, -1, PREG_SPLIT_NO_EMPTY);
+        }
+
+        $maker_id = $request->query('maker');
+
+        $racketImageQuery = RacketImage::query();
+
+        if ($severalWords && $maker_id) {
+            foreach ($severalWordsArray as $word) {
+                //severalWordsで複数取れてきてもmakerが一致しない場合は弾かれる
+                $racketImageQuery
+                    ->orWhere(function ($racketImageQuery) use ($word, $maker_id) {
+                        $racketImageQuery
+                            ->where('title', 'like', '%' . $word . '%')
+                            ->where('maker_id', '=', $maker_id);
+                    });
+            }
+        } elseif ($severalWords && empty($maker_id)) {
+            //makerの指定がないのでseveralWordsのor検索となる
+            foreach ($severalWordsArray as $word) {
+                $racketImageQuery->orWhere('title', 'like', '%' . $word . '%');
+            }
+        } elseif (empty($severalWords) && $maker_id) {
+            //makerのみでの検索
+            $racketImageQuery->where('maker_id', '=', $maker_id);
+        }
+
+        $searchedRacketImages = $racketImageQuery->with('maker')->get();
+
+        return response()->json($searchedRacketImages, 200);
+    }
 }

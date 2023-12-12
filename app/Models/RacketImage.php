@@ -18,4 +18,9 @@ class RacketImage extends Model
     {
         return $this->hasMany(Racket::class, 'image_id','id');
     }
+
+    public function maker()
+    {
+        return $this->belongsTo(Maker::class);
+    }
 }
