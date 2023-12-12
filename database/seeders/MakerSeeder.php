@@ -18,6 +18,12 @@ class MakerSeeder extends Seeder
     {
         DB::table('makers')->insert([
             [
+                'name_ja' => 'その他',
+                'name_en' => 'others',
+                'created_at' => Carbon::now(),
+                'updated_at' => Carbon::now(),
+            ],
+            [
                 'name_ja' => 'ヨネックス',
                 'name_en' => 'yonex',
                 'created_at' => Carbon::now(),
