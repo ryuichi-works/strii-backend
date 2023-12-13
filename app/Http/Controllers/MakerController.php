@@ -9,6 +9,11 @@ use App\Http\Requests\Maker\MakerUpdateRequest;
 
 class MakerController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('auth:admin')->only(['show', 'store', 'update', 'destroy']);
+    }
+    
     public function index()
     {
         try {
