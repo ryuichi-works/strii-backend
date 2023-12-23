@@ -220,7 +220,10 @@ class GutController extends Controller
             $gutQuery->where('maker_id', '=', $maker_id);
         }
 
-        $searchedGuts = $gutQuery->with(['maker', 'gutImage'])->paginate(8);
+        $searchedGuts = $gutQuery
+            ->with(['maker', 'gutImage'])
+            ->paginate(8)
+            ->appends(['several_words' => $severalWords, 'maker' => $maker_id]);
 
         return response()->json($searchedGuts, 200);
     }
