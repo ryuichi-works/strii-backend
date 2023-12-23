@@ -23,7 +23,7 @@ class GutController extends Controller
     public function index()
     {
         try {
-            $guts = Gut::with(['maker', 'gutImage'])->get();
+            $guts = Gut::with(['maker', 'gutImage'])->paginate(8);
 
             return response()->json($guts, 200);
         } catch (\Throwable $e) {
@@ -220,7 +220,7 @@ class GutController extends Controller
             $gutQuery->where('maker_id', '=', $maker_id);
         }
 
-        $searchedGuts = $gutQuery->with(['maker', 'gutImage'])->get();
+        $searchedGuts = $gutQuery->with(['maker', 'gutImage'])->paginate(8);
 
         return response()->json($searchedGuts, 200);
     }
