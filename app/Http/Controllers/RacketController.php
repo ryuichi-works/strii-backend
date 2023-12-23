@@ -23,7 +23,7 @@ class RacketController extends Controller
     public function index()
     {
         try {
-            $rackets = Racket::with(['maker', 'racketImage'])->get();
+            $rackets = Racket::with(['maker', 'racketImage'])->paginate(8);
 
             return response()->json($rackets, 200);
         } catch (\Throwable $e) {
@@ -216,7 +216,10 @@ class RacketController extends Controller
             $racketQuery->where('maker_id', '=', $maker_id);
         }
 
-        $searchedRackets = $racketQuery->with(['maker', 'racketImage'])->get();
+        $searchedRackets = $racketQuery
+            ->with(['maker', 'racketImage'])
+            ->paginate(8)
+            ->appends(['several_words' => $severalWords, 'maker' => $maker_id]);
 
         return response()->json($searchedRackets, 200);
     }
