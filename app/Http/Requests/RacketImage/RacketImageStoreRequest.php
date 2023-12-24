@@ -25,7 +25,8 @@ class RacketImageStoreRequest extends FormRequest
     {
         return [
             'file' => ['required', 'file', 'image', 'mimes:jpeg,png'],
-            'title' => ['required', 'max:30']
+            'title' => ['required', 'max:30'],
+            'maker_id' => ['required', 'integer', 'exists:makers,id'],
         ];
     }
 }
