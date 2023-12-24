@@ -11,7 +11,8 @@ class GutImage extends Model
 
     protected $fillable = [
         'file_path',
-        'title'
+        'title',
+        'maker_id'
     ];
 
     public function guts() {

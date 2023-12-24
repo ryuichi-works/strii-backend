@@ -25,7 +25,8 @@ class GutImageUpdateRequest extends FormRequest
     {
         return [
             'file' => ['file', 'image', 'mimes:jpeg,png'],
-            'title' => ['max:30']
+            'title' => ['max:30'],
+            'maker_id' => ['required', 'integer', 'exists:makers,id'],
         ];
     }
 }
