@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\GutImage;
+use App\Models\Maker;
 use Illuminate\Support\Facades\Storage;
 use App\Http\Requests\GutImage\GutImageStoreRequest;
 use App\Http\Requests\GutImage\GutImageUpdateRequest;
@@ -24,7 +25,7 @@ class GutImageController extends Controller
     public function index()
     {
         try {
-            $gut_images = GutImage::all();
+            $gut_images = GutImage::with('maker')->get();
 
             $image_infos = [];
 
@@ -33,7 +34,8 @@ class GutImageController extends Controller
                 $image_info = [
                     'id' => $image->id,
                     'title' => $image->title,
-                    'file_path' => Storage::url($image->file_path)
+                    'file_path' => Storage::url($image->file_path),
+                    'maker' => $image->maker
                 ];
 
                 array_push($image_infos, $image_info);
@@ -67,13 +69,17 @@ class GutImageController extends Controller
 
             $gut_image = GutImage::create([
                 'file_path' => $path,
-                'title' => $validated_request['title']
+                'title' => $validated_request['title'],
+                'maker_id' => $validated_request['maker_id']
             ]);
 
             if (isset($gut_image)) {
+                $maker = Maker::find($gut_image->maker_id);
+
                 return response()->json([
                     'file_path' => Storage::url($gut_image['file_path']),
-                    'title' => $gut_image['title']
+                    'title' => $gut_image['title'],
+                    'maker' => $maker
                 ], 200);
             }
         } catch (\Throwable $e) {
@@ -92,12 +98,13 @@ class GutImageController extends Controller
     public function show($id)
     {
         try {
-            $gut_image = GutImage::findOrFail($id);
+            $gut_image = GutImage::with('maker')->findOrFail($id);
 
             return response()->json([
                 'id' => $gut_image['id'],
                 'file_path' => Storage::url($gut_image['file_path']),
-                'title' => $gut_image['title']
+                'title' => $gut_image['title'],
+                'maker' => $gut_image['maker']
             ]);
         } catch (ModelNotFoundException $e) {
             throw $e;
@@ -120,7 +127,7 @@ class GutImageController extends Controller
         $validated_request = $request->validated();
 
         try {
-            $image = GutImage::findOrFail($id);
+            $image = GutImage::with('maker')->findOrFail($id);
 
             //新しいファイルがあれば新たにstorageに登録
             if($request->file('file')) {
@@ -135,13 +142,19 @@ class GutImageController extends Controller
             }
 
             $image->title = $validated_request['title'];
-            $image->save();
+            $image->maker_id = $validated_request['maker_id'];
 
-            return response()->json([
-                'id' => $image['id'],
-                'file_path' => Storage::url($image['file_path']),
-                'title' => $image['title']
-            ], 200);
+            if($image->save()) {
+                $maker = Maker::find($image->maker_id);
+
+                return response()->json([
+                    'id' => $image['id'],
+                    'file_path' => Storage::url($image['file_path']),
+                    'title' => $image['title'],
+                    'maker' => $maker
+                ], 200);
+            }
+
         } catch (\Throwable $e) {
             \Log::error($e);
 
