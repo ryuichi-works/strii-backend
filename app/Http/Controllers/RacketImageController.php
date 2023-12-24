@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\RacketImage\RacketImageStoreRequest;
 use App\Http\Requests\RacketImage\RacketImageUpdateRequest;
 use App\Models\RacketImage;
+use App\Models\Maker;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
@@ -23,7 +24,8 @@ class RacketImageController extends Controller
     public function index()
     {
         try {
-            $racket_images = RacketImage::all();
+            // $racket_images = RacketImage::with('maker')->all();
+            $racket_images = RacketImage::with('maker')->get();
 
             $image_infos = [];
 
@@ -32,7 +34,8 @@ class RacketImageController extends Controller
                 $image_info = [
                     'id' => $image->id,
                     'title' => $image->title,
-                    'file_path' => Storage::url($image->file_path)
+                    'file_path' => Storage::url($image->file_path),
+                    'maker' => $image->maker
                 ];
 
                 array_push($image_infos, $image_info);
@@ -65,13 +68,17 @@ class RacketImageController extends Controller
 
             $racket_image = RacketImage::create([
                 'file_path' => $path,
-                'title' => $validated_request['title']
+                'title' => $validated_request['title'],
+                'maker_id' => $validated_request['maker_id']
             ]);
 
             if (isset($racket_image)) {
+                $maker = Maker::find($racket_image->maker_id);
+
                 return response()->json([
                     'file_path' => Storage::url($racket_image['file_path']),
-                    'title' => $racket_image['title']
+                    'title' => $racket_image['title'],
+                    'maker' => $maker
                 ], 200);
             }
         } catch (\Throwable $e) {
@@ -90,12 +97,13 @@ class RacketImageController extends Controller
     public function show($id)
     {
         try {
-            $racket_image = RacketImage::findOrFail($id);
+            $racket_image = RacketImage::with('maker')->findOrFail($id);
 
             return response()->json([
                 'id' => $racket_image['id'],
                 'file_path' => Storage::url($racket_image['file_path']),
-                'title' => $racket_image['title']
+                'title' => $racket_image['title'],
+                'maker' => $racket_image['maker']
             ]);
         } catch (ModelNotFoundException $e) {
             throw $e;
@@ -118,7 +126,7 @@ class RacketImageController extends Controller
         $validated_request = $request->validated();
 
         try {
-            $image = RacketImage::findOrFail($id);
+            $image = RacketImage::with('maker')->findOrFail($id);
 
             //新しいファイルがあれば新たにstorageに登録
             if($request->file('file')) {
@@ -133,13 +141,18 @@ class RacketImageController extends Controller
             }
 
             $image->title = $validated_request['title'];
-            $image->save();
+            $image->maker_id = $validated_request['maker_id'];
 
-            return response()->json([
-                'id' => $image['id'],
-                'file_path' => Storage::url($image['file_path']),
-                'title' => $image['title']
-            ], 200);
+            if($image->save()) {
+                $maker = Maker::find($image->maker_id);
+
+                return response()->json([
+                    'id' => $image['id'],
+                    'file_path' => Storage::url($image['file_path']),
+                    'title' => $image['title'],
+                    'maker' => $maker
+                ], 200);
+            }
         } catch (\Throwable $e) {
             \Log::error($e);
 
