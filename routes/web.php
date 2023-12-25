@@ -50,6 +50,7 @@ Route::apiResource('api/rackets', RacketController::class);
 Route::get('api/rackets/{id}/others', [RacketController::class, 'getRandamOtherRackets']);
 
 Route::apiResource('api/tennis_profiles', TennisProfileController::class);
+Route::get('api/tennis_profiles/user/{userId}', [TennisProfileController::class, 'getCurrentUserTennisProfile']);
 
 Route::apiResource('api/my_equipments', MyEquipmentController::class);
 Route::get('/api/my_equipments/user/{id}', [ MyEquipmentController::class, 'getAllEquipmentOfUser']);

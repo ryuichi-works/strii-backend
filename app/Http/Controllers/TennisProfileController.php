@@ -144,4 +144,24 @@ class TennisProfileController extends Controller
     {
         //
     }
+
+    public function getCurrentUserTennisProfile($userId)
+    {
+        try {
+            $tennis_profile = TennisProfile::where('user_id', '=', $userId)
+                ->with([
+                    'user',
+                    'racket' => ['maker', 'racketImage']
+                ])
+                ->get()[0];
+
+            return response()->json($tennis_profile, 200);
+        } catch (\ModelNotFoundException $e) {
+            throw $e;
+        } catch (\Throwable $e) {
+            \Log::error($e);
+
+            throw $e;
+        }
+    }
 }
