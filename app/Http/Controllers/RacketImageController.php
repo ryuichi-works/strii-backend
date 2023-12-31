@@ -24,24 +24,9 @@ class RacketImageController extends Controller
     public function index()
     {
         try {
-            // $racket_images = RacketImage::with('maker')->all();
-            $racket_images = RacketImage::with('maker')->get();
+            $racket_images = RacketImage::with('maker')->paginate(8);
 
-            $image_infos = [];
-
-            //各imageのpathを整形して返却
-            foreach ($racket_images as $image) {
-                $image_info = [
-                    'id' => $image->id,
-                    'title' => $image->title,
-                    'file_path' => Storage::url($image->file_path),
-                    'maker' => $image->maker
-                ];
-
-                array_push($image_infos, $image_info);
-            }
-
-            return response()->json($image_infos, 200);
+            return response()->json($racket_images, 200);
         } catch (\Throwable $e) {
             \Log::error($e);
 
@@ -221,7 +206,10 @@ class RacketImageController extends Controller
             $racketImageQuery->where('maker_id', '=', $maker_id);
         }
 
-        $searchedRacketImages = $racketImageQuery->with('maker')->get();
+        $searchedRacketImages = $racketImageQuery
+            ->with('maker')
+            ->paginate(8)
+            ->appends(['several_words' => $severalWords, 'maker' => $maker_id]);
 
         return response()->json($searchedRacketImages, 200);
     }

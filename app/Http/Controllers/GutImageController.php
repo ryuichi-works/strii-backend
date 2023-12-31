@@ -25,23 +25,9 @@ class GutImageController extends Controller
     public function index()
     {
         try {
-            $gut_images = GutImage::with('maker')->get();
+            $gut_images = GutImage::with('maker')->paginate(8);
 
-            $image_infos = [];
-
-            //各imageのpathを整形して返却
-            foreach ($gut_images as $image) {
-                $image_info = [
-                    'id' => $image->id,
-                    'title' => $image->title,
-                    'file_path' => Storage::url($image->file_path),
-                    'maker' => $image->maker
-                ];
-
-                array_push($image_infos, $image_info);
-            }
-
-            return response()->json($image_infos, 200);
+            return response()->json($gut_images, 200);
         } catch (\Throwable $e) {
             \Log::error($e);
 
@@ -223,7 +209,10 @@ class GutImageController extends Controller
             $gutImageQuery->where('maker_id', '=', $maker_id);
         }
 
-        $searchedGutImages = $gutImageQuery->with('maker')->get();
+        $searchedGutImages = $gutImageQuery
+            ->with('maker')
+            ->paginate(8)
+            ->appends(['several_words' => $severalWords, 'maker' => $maker_id]);
 
         return response()->json($searchedGutImages, 200);
     }
