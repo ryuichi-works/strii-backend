@@ -152,8 +152,16 @@ class GutReviewController extends Controller
             $match_rate = (int) $request->query('match_rate');
             $pysical_durability = (int) $request->query('pysical_durability');
             $performance_durability = (int) $request->query('performance_durability');
-
             $search_range_type = $request->query('search_range_type');
+
+            // 関連テーブルのmy_equipmentsでの検索項目
+            $user_height = $request->query('user_height');
+            $user_age = $request->query('user_age');
+            $experience_period = $request->query('experience_period');
+            $racket_id = $request->query('racket_id');
+            $stringing_way = $request->query('stringing_way');
+            $main_gut_id = $request->query('main_gut_id');
+            $cross_gut_id = $request->query('cross_gut_id');
 
             if ($search_range_type === 'or_more') {
                 $range_type = '>=';
@@ -176,7 +184,61 @@ class GutReviewController extends Controller
                 $gutReviewQuery->where('performance_durability', $range_type, $performance_durability);
             }
 
-            $searchedGutReview = $gutReviewQuery->get();
+            // joinさせてから検索する場合、最後のquery実行時にデータの構造がフラットになり
+            // eager loadingさせたい時その分余分なデータが残ってしまうので、
+            // その場合に意図したデータ構造にするために使用する関数
+            function searchGutReviewWithJoinedTable($gutReviewQuery, $searchColumn, $searchVal)
+            {
+                $gutReviewQuery
+                    ->select(
+                        'gut_reviews.id',
+                        'equipment_id',
+                        'match_rate',
+                        'pysical_durability',
+                        'performance_durability',
+                        'review',
+                        'gut_reviews.created_at',
+                        'gut_reviews.updated_at'
+                    )
+                    ->where($searchColumn, '=', $searchVal);
+            }
+
+            // gutReviewに紐つくmy_equipmentsの項目で検索
+            if($user_height || $user_age || $experience_period || $racket_id || $stringing_way || $main_gut_id || $cross_gut_id) {
+                // my_equipmentsテーブルの項目で検索するときは先にjoinさせておく
+                $gutReviewQuery->join('my_equipments', 'gut_reviews.equipment_id', '=', 'my_equipments.id');
+                
+                if($user_height) {
+                    searchGutReviewWithJoinedTable($gutReviewQuery,'user_height', $user_height);
+                }
+    
+                if($user_age) {
+                    searchGutReviewWithJoinedTable($gutReviewQuery,'user_age', $user_age);
+                }
+
+                if($experience_period) {
+                    searchGutReviewWithJoinedTable($gutReviewQuery,'experience_period', $experience_period);
+                }
+
+                if($racket_id) {
+                    searchGutReviewWithJoinedTable($gutReviewQuery,'racket_id', $racket_id);
+                }
+
+                if($stringing_way) {
+                    searchGutReviewWithJoinedTable($gutReviewQuery,'stringing_way', $stringing_way);
+                }
+
+                if($main_gut_id) {
+                    searchGutReviewWithJoinedTable($gutReviewQuery,'main_gut_id', $main_gut_id);
+                }
+
+                if($cross_gut_id) {
+                    searchGutReviewWithJoinedTable($gutReviewQuery,'cross_gut_id', $cross_gut_id);
+                }
+            }
+            
+
+            $searchedGutReview = $gutReviewQuery->with('myEquipment')->get();
 
             return response()->json($searchedGutReview, 200);
         } catch (\Throwable $e) {
