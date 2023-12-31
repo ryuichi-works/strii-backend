@@ -60,6 +60,7 @@ Route::get('/api/my_equipments/user/{id}', [ MyEquipmentController::class, 'getA
 //     Route::get('api/my_equipments/user/{userId}', [ MyEquipmentController::class, 'getAllEquipmentOfUser']);
 // });
 
+Route::get('api/gut_reviews/search', [GutReviewController::class, 'gutReviewSearch']);
 Route::apiResource('api/gut_reviews', GutReviewController::class);
 
 Route::apiResource('api/users', UserController::class)->except('store');

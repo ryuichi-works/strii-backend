@@ -144,4 +144,9 @@ class GutReviewController extends Controller
             throw $e;
         }
     }
+
+    public function gutReviewSearch(Request $request)
+    {
+        return '接続確認';
+    }
 }
