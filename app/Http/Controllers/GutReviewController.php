@@ -147,6 +147,40 @@ class GutReviewController extends Controller
 
     public function gutReviewSearch(Request $request)
     {
-        return '接続確認';
+
+        try {
+            $match_rate = (int) $request->query('match_rate');
+            $pysical_durability = (int) $request->query('pysical_durability');
+            $performance_durability = (int) $request->query('performance_durability');
+
+            $search_range_type = $request->query('search_range_type');
+
+            if ($search_range_type === 'or_more') {
+                $range_type = '>=';
+            } elseif ($search_range_type === 'or_less') {
+                $range_type = '<=';
+            }
+
+            $gutReviewQuery = GutReview::query();
+
+            // gutReviewのレビュー項目での検索
+            if($match_rate && $range_type) {
+                $gutReviewQuery->where('match_rate', $range_type, $match_rate);
+            }
+
+            if($pysical_durability && $range_type) {
+                $gutReviewQuery->where('pysical_durability', $range_type, $pysical_durability);
+            }
+
+            if($performance_durability && $range_type) {
+                $gutReviewQuery->where('performance_durability', $range_type, $performance_durability);
+            }
+
+            $searchedGutReview = $gutReviewQuery->get();
+
+            return response()->json($searchedGutReview, 200);
+        } catch (\Throwable $e) {
+            throw $e;
+        }
     }
 }
