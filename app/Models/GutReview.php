@@ -10,6 +10,7 @@ class GutReview extends Model
     use HasFactory;
 
     protected $fillable = [
+        'user_id',
         'equipment_id',
         'match_rate',
         'pysical_durability',
