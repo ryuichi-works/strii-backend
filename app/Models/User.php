@@ -52,4 +52,9 @@ class User extends Authenticatable
     {
         return $this->hasMany(MyEquipment::class);
     }
+
+    public function gutReviews()
+    {
+        return $this->hasMany(GutReview::class);
+    }
 }

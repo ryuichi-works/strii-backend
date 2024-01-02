@@ -10,6 +10,7 @@ class GutReview extends Model
     use HasFactory;
 
     protected $fillable = [
+        'user_id',
         'equipment_id',
         'match_rate',
         'pysical_durability',
@@ -20,5 +21,10 @@ class GutReview extends Model
     public function myEquipment()
     {
         return $this->belongsTo(MyEquipment::class,'equipment_id', 'id');
+    }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
     }
 }

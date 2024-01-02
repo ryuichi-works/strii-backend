@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\GutReview;
 use App\Http\Requests\GutReview\GutReviewStoreRequest;
 use App\Http\Requests\GutReview\GutReviewUpdateRequest;
+use Illuminate\Support\Facades\Auth;
 
 class GutReviewController extends Controller
 {
@@ -44,8 +45,11 @@ class GutReviewController extends Controller
     {
         $validated = $request->validated();
 
+        $userId = Auth::guard('user')->id();
+
         try {
             $gut_review = GutReview::create([
+                'user_id' => $userId,
                 'equipment_id' => $validated['equipment_id'],
                 'match_rate' => $validated['match_rate'],
                 'pysical_durability' => $validated['pysical_durability'],
