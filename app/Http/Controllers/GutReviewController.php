@@ -163,6 +163,15 @@ class GutReviewController extends Controller
             $main_gut_id = $request->query('main_gut_id');
             $cross_gut_id = $request->query('cross_gut_id');
 
+            // tennis_profilesテーブルの項目での検索項目
+            $gender = $request->query('gender');
+            $grip_form = $request->query('grip_form');
+            $physique = $request->query('physique');
+            $frequency = $request->query('frequency');
+            $play_style = $request->query('play_style');
+            $favarit_shot = $request->query('favarit_shot');
+            $weak_shot = $request->query('weak_shot');
+
             if ($search_range_type === 'or_more') {
                 $range_type = '>=';
             } elseif ($search_range_type === 'or_less') {
@@ -184,7 +193,7 @@ class GutReviewController extends Controller
                 $gutReviewQuery->where('performance_durability', $range_type, $performance_durability);
             }
 
-            // joinさせてから検索する場合、最後のquery実行時にデータの構造がフラットになり
+            // joinさせてから検索する場合、最後のquery実行時にデータの構造がフラットに追加され
             // eager loadingさせたい時その分余分なデータが残ってしまうので、
             // その場合に意図したデータ構造にするために使用する関数
             function searchGutReviewWithJoinedTable($gutReviewQuery, $searchColumn, $searchVal)
@@ -236,7 +245,62 @@ class GutReviewController extends Controller
                     searchGutReviewWithJoinedTable($gutReviewQuery,'cross_gut_id', $cross_gut_id);
                 }
             }
-            
+
+            // tennis_profileの項目で検索
+            if($gender || $grip_form || $physique || $frequency || $play_style || $favarit_shot || $weak_shot) {
+                // tennis_profilesテーブルの値を使った時の検策関数
+                function searchWithJoinedTennisProfilesTable($gutReviewQuery, $searchColumn, $searchVal)
+                {
+                    // gutReviewqueryで使うサブクエリとしてtennis_profilesテーブルをusersテーブルでjoin
+                    $userTennisProfileSubQuery = \DB::table('tennis_profiles')
+                        ->select('user_id', 'gender', 'my_racket_id', 'grip_form', 'height', 'age', 'physique', 'experience_period', 'frequency', 'play_style', 'favarit_shot', 'weak_shot')
+                        ->join('users', 'tennis_profiles.user_id', '=', 'users.id');
+
+                    $gutReviewQuery
+                        ->select(
+                            'gut_reviews.id',
+                            'equipment_id',
+                            'match_rate',
+                            'pysical_durability',
+                            'performance_durability',
+                            'review',
+                            'gut_reviews.created_at',
+                            'gut_reviews.updated_at'
+                        )
+                        ->joinSub($userTennisProfileSubQuery, 'user_tennis_profile', function($join) {
+                            $join->on('gut_reviews.user_id', '=', 'user_tennis_profile.user_id');
+                        })
+                        ->where($searchColumn, '=', $searchVal);
+                }
+
+                if($gender) {
+                    searchWithJoinedTennisProfilesTable($gutReviewQuery,'gender', $gender);
+                }
+    
+                if($grip_form) {
+                    searchWithJoinedTennisProfilesTable($gutReviewQuery,'grip_form', $grip_form);
+                }
+
+                if($physique) {
+                    searchWithJoinedTennisProfilesTable($gutReviewQuery,'physique', $physique);
+                }
+
+                if($frequency) {
+                    searchWithJoinedTennisProfilesTable($gutReviewQuery,'frequency', $frequency);
+                }
+
+                if($play_style) {
+                    searchWithJoinedTennisProfilesTable($gutReviewQuery,'play_style', $play_style);
+                }
+
+                if($favarit_shot) {
+                    searchWithJoinedTennisProfilesTable($gutReviewQuery,'favarit_shot', $favarit_shot);
+                }
+
+                if($weak_shot) {
+                    searchWithJoinedTennisProfilesTable($gutReviewQuery,'weak_shot', $weak_shot);
+                }
+            }
 
             $searchedGutReview = $gutReviewQuery->with('myEquipment')->get();
 
