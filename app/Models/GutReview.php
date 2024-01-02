@@ -21,4 +21,9 @@ class GutReview extends Model
     {
         return $this->belongsTo(MyEquipment::class,'equipment_id', 'id');
     }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
 }
