@@ -51,6 +51,7 @@ class GutImageController extends Controller
         try {
             // 画像ファイルリサイジング
             $file = Image::make($request->file('file'));
+            $file->orientate();
             $file->resize(
                 560,
                 null,
