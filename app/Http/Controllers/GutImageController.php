@@ -139,14 +139,37 @@ class GutImageController extends Controller
 
             //新しいファイルがあれば新たにstorageに登録
             if ($request->file('file')) {
-                $file = $request->file('file');
+                // 画像ファイルリサイジング
+                $file = Image::make($request->file('file'));
+                $file->orientate();
+                $file->resize(
+                    560,
+                    null,
+                    function ($constraint) {
+                        // 縦横比を保持したままにする
+                        $constraint->aspectRatio();
+                        // 小さい画像は大きくしない
+                        $constraint->upsize();
+                    }
+                );
+
                 $filename = now()->format('YmdHis') . $validated_request['title'] . "." . $request->file('file')->extension();
-                $path = $file->storeAs('images/guts', $filename, 'public');
 
-                //以前のイメージファイルをstorageフォルダから削除
-                Storage::disk('public')->delete($image->file_path);
+                // storageに登録するためのpathを生成
+                $storagePath = storage_path('app/public/images/guts');
+                $fileLocationFullPath = $storagePath . '/' . $filename;
 
-                $image->file_path = $path;
+                if ($file->save($fileLocationFullPath)) {
+                    // "/var/www/html/strii-backend/storage/app/public/images/guts20240105123954リサイズ確認５.jpg"
+                    // intervension image導入前の登録の仕様に合わせるため
+                    // 上記のようなfullPathをDBのfile_pathカラム用に整形
+                    $trimedFilePath = strstr($fileLocationFullPath, 'images');
+
+                    //以前のイメージファイルをstorageフォルダから削除
+                    Storage::disk('public')->delete($image->file_path);
+
+                    $image->file_path = $trimedFilePath;
+                }
             }
 
             $image->title = $validated_request['title'];
@@ -165,7 +188,7 @@ class GutImageController extends Controller
         } catch (\Throwable $e) {
             \Log::error($e);
 
-            return $e;
+            throw $e;
         }
     }
 
