@@ -9,6 +9,8 @@ use Illuminate\Support\Facades\Storage;
 use App\Http\Requests\GutImage\GutImageStoreRequest;
 use App\Http\Requests\GutImage\GutImageUpdateRequest;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use InterventionImage;
+use Intervention\Image\Facades\Image;
 
 class GutImageController extends Controller
 {
@@ -16,7 +18,7 @@ class GutImageController extends Controller
     {
         $this->middleware('auth:admin')->except('store');
     }
-    
+
     /**
      * Display a listing of the resource.
      *
@@ -47,17 +49,38 @@ class GutImageController extends Controller
         $validated_request = $request->validated();
 
         try {
-            $file = $request->file('file');
+            // 画像ファイルリサイジング
+            $file = Image::make($request->file('file'));
+            $file->orientate();
+            $file->resize(
+                560,
+                null,
+                function ($constraint) {
+                    // 縦横比を保持したままにする
+                    $constraint->aspectRatio();
+                    // 小さい画像は大きくしない
+                    $constraint->upsize();
+                }
+            );
 
             $filename = now()->format('YmdHis') . $validated_request['title'] . "." . $request->file('file')->extension();
 
-            $path = $file->storeAs('images/guts', $filename, 'public');
+            // storageに登録するためのpathを生成
+            $storagePath = storage_path('app/public/images/guts');
+            $fileLocationFullPath = $storagePath . '/' . $filename;
 
-            $gut_image = GutImage::create([
-                'file_path' => $path,
-                'title' => $validated_request['title'],
-                'maker_id' => $validated_request['maker_id']
-            ]);
+            if ($file->save($fileLocationFullPath)) {
+                // "/var/www/html/strii-backend/storage/app/public/images/guts20240105123954リサイズ確認５.jpg"
+                // intervension image導入前の登録の仕様に合わせるため
+                // 上記のようなfullPathをDBのfile_pathカラム用に整形
+                $trimedFilePath = strstr($fileLocationFullPath, 'images');
+
+                $gut_image = GutImage::create([
+                    'file_path' => $trimedFilePath,
+                    'title' => $validated_request['title'],
+                    'maker_id' => $validated_request['maker_id']
+                ]);
+            }
 
             if (isset($gut_image)) {
                 $maker = Maker::find($gut_image->maker_id);
@@ -71,7 +94,7 @@ class GutImageController extends Controller
         } catch (\Throwable $e) {
             \Log::error($e);
 
-            return $e;
+            throw $e;
         }
     }
 
@@ -116,21 +139,44 @@ class GutImageController extends Controller
             $image = GutImage::with('maker')->findOrFail($id);
 
             //新しいファイルがあれば新たにstorageに登録
-            if($request->file('file')) {
-                $file = $request->file('file');
+            if ($request->file('file')) {
+                // 画像ファイルリサイジング
+                $file = Image::make($request->file('file'));
+                $file->orientate();
+                $file->resize(
+                    560,
+                    null,
+                    function ($constraint) {
+                        // 縦横比を保持したままにする
+                        $constraint->aspectRatio();
+                        // 小さい画像は大きくしない
+                        $constraint->upsize();
+                    }
+                );
+
                 $filename = now()->format('YmdHis') . $validated_request['title'] . "." . $request->file('file')->extension();
-                $path = $file->storeAs('images/guts', $filename, 'public');
-    
-                //以前のイメージファイルをstorageフォルダから削除
-                Storage::disk('public')->delete($image->file_path);
-                
-                $image->file_path = $path;
+
+                // storageに登録するためのpathを生成
+                $storagePath = storage_path('app/public/images/guts');
+                $fileLocationFullPath = $storagePath . '/' . $filename;
+
+                if ($file->save($fileLocationFullPath)) {
+                    // "/var/www/html/strii-backend/storage/app/public/images/guts20240105123954リサイズ確認５.jpg"
+                    // intervension image導入前の登録の仕様に合わせるため
+                    // 上記のようなfullPathをDBのfile_pathカラム用に整形
+                    $trimedFilePath = strstr($fileLocationFullPath, 'images');
+
+                    //以前のイメージファイルをstorageフォルダから削除
+                    Storage::disk('public')->delete($image->file_path);
+
+                    $image->file_path = $trimedFilePath;
+                }
             }
 
             $image->title = $validated_request['title'];
             $image->maker_id = $validated_request['maker_id'];
 
-            if($image->save()) {
+            if ($image->save()) {
                 $maker = Maker::find($image->maker_id);
 
                 return response()->json([
@@ -140,11 +186,10 @@ class GutImageController extends Controller
                     'maker' => $maker
                 ], 200);
             }
-
         } catch (\Throwable $e) {
             \Log::error($e);
 
-            return $e;
+            throw $e;
         }
     }
 
