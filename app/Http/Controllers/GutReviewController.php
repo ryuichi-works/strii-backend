@@ -25,7 +25,7 @@ class GutReviewController extends Controller
                     'mainGut' => ['maker', 'gutImage'],
                     'crossGut' => ['maker', 'gutImage'],
                 ]
-            ])->get();
+            ])->paginate(8);
 
             return response()->json($gut_reviews, 200);
         } catch (\Throwable $e) {
@@ -294,15 +294,41 @@ class GutReviewController extends Controller
                 }
             }
 
-            // $searchedGutReview = $gutReviewQuery->with('myEquipment')->get();
-            $searchedGutReview = $gutReviewQuery->with([
-                'myEquipment' => [
-                    'user',
-                    'racket' => ['maker', 'racketImage'],
-                    'mainGut' => ['maker', 'gutImage'],
-                    'crossGut' => ['maker', 'gutImage'],
-                ]
-            ])->get();
+            $searchedGutReview = $gutReviewQuery
+                ->with([
+                    'myEquipment' => [
+                        'user',
+                        'racket' => ['maker', 'racketImage'],
+                        'mainGut' => ['maker', 'gutImage'],
+                        'crossGut' => ['maker', 'gutImage'],
+                    ]
+                ])
+                ->paginate(8)
+                ->appends([
+                    // // gutReviewのレビュー項目での検索query
+                    'match_rate' => $match_rate ? $match_rate : null,
+                    'pysical_durability' => $pysical_durability ? $pysical_durability : null,
+                    'performance_durability' => $performance_durability ? $performance_durability : null,
+                    'search_range_type' => $search_range_type ? $search_range_type : null,
+
+                    // 関連テーブルのmy_equipmentsでの検索query
+                    'user_height' => $user_height,
+                    'user_age' => $user_age,
+                    'experience_period' => $experience_period,
+                    'racket_id' => $racket_id,
+                    'stringing_way' => $stringing_way,
+                    'main_gut_id' => $main_gut_id,
+                    'cross_gut_id' => $cross_gut_id,
+
+                    // tennis_profilesテーブルの項目での検索query
+                    'gender' => $gender,
+                    'grip_form' => $grip_form ,
+                    'physique' => $physique,
+                    'frequency' => $frequency,
+                    'play_style' => $play_style,
+                    'favarit_shot' => $favarit_shot,
+                    'weak_shot' => $weak_shot,
+                ]);
 
             return response()->json($searchedGutReview, 200);
         } catch (\Throwable $e) {
