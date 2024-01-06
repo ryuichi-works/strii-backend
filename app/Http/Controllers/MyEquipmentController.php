@@ -23,7 +23,7 @@ class MyEquipmentController extends Controller
     public function index()
     {
         try {
-            $my_equipment = MyEquipment::with(['user', 'mainGut', 'crossGut'])->get();
+            $my_equipment = MyEquipment::with(['user', 'mainGut', 'crossGut'])->paginate(8);
 
             return response()->json($my_equipment, 200);
         } catch (\Throwable $e) {
@@ -176,8 +176,7 @@ class MyEquipmentController extends Controller
                 'racket' => ['maker', 'racketImage'],
                 'mainGut' => ['maker', 'gutImage'],
                 'crossGut' => ['maker', 'gutImage']
-            ])->get();
-            // $user_equipments = MyEquipment::where('user_id', '=', $id)->get();
+            ])->paginate(8);
 
             return response()->json($user_equipments, 200);
         } catch (\Throwable $e) {
