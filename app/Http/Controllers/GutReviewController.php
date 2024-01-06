@@ -294,9 +294,10 @@ class GutReviewController extends Controller
                 }
             }
 
+            // $searchedGutReview = $gutReviewQuery->with('myEquipment')->get();
             $searchedGutReview = $gutReviewQuery->with([
                 'myEquipment' => [
-                    'user' => ['tennisProfile'],
+                    'user',
                     'racket' => ['maker', 'racketImage'],
                     'mainGut' => ['maker', 'gutImage'],
                     'crossGut' => ['maker', 'gutImage'],
