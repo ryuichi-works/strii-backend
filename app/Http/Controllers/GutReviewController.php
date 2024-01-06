@@ -197,11 +197,12 @@ class GutReviewController extends Controller
                 $gutReviewQuery->where('performance_durability', $range_type, $performance_durability);
             }
 
-            // joinさせてから検索する場合、最後のquery実行時にデータの構造がフラットに追加され
-            // eager loadingさせたい時その分余分なデータが残ってしまうので、
-            // その場合に意図したデータ構造にするために使用する関数
-            function searchGutReviewWithJoinedTable($gutReviewQuery, $searchColumn, $searchVal)
+            // 等値比較メソッド
+            function searchGutReviewWithEqualityComparison($gutReviewQuery, $searchColumn, $searchVal)
             {
+                // joinさせてから検索する場合、最後のquery実行時にデータの構造がjoinさせたカラムで崩れ
+                // eager loadingさせたい時その分余分なデータが残ってしまうので、
+                // その場合に意図したデータ構造にするためにselectでカラムを指定
                 $gutReviewQuery
                     ->select(
                         'gut_reviews.id',
@@ -222,91 +223,86 @@ class GutReviewController extends Controller
                 $gutReviewQuery->join('my_equipments', 'gut_reviews.equipment_id', '=', 'my_equipments.id');
                 
                 if($user_height) {
-                    searchGutReviewWithJoinedTable($gutReviewQuery,'user_height', $user_height);
+                    searchGutReviewWithEqualityComparison($gutReviewQuery,'user_height', $user_height);
                 }
     
                 if($user_age) {
-                    searchGutReviewWithJoinedTable($gutReviewQuery,'user_age', $user_age);
+                    searchGutReviewWithEqualityComparison($gutReviewQuery,'user_age', $user_age);
                 }
 
                 if($experience_period) {
-                    searchGutReviewWithJoinedTable($gutReviewQuery,'experience_period', $experience_period);
+                    searchGutReviewWithEqualityComparison($gutReviewQuery,'experience_period', $experience_period);
                 }
 
                 if($racket_id) {
-                    searchGutReviewWithJoinedTable($gutReviewQuery,'racket_id', $racket_id);
+                    searchGutReviewWithEqualityComparison($gutReviewQuery,'racket_id', $racket_id);
                 }
 
                 if($stringing_way) {
-                    searchGutReviewWithJoinedTable($gutReviewQuery,'stringing_way', $stringing_way);
+                    searchGutReviewWithEqualityComparison($gutReviewQuery,'stringing_way', $stringing_way);
                 }
 
                 if($main_gut_id) {
-                    searchGutReviewWithJoinedTable($gutReviewQuery,'main_gut_id', $main_gut_id);
+                    searchGutReviewWithEqualityComparison($gutReviewQuery,'main_gut_id', $main_gut_id);
                 }
 
                 if($cross_gut_id) {
-                    searchGutReviewWithJoinedTable($gutReviewQuery,'cross_gut_id', $cross_gut_id);
+                    searchGutReviewWithEqualityComparison($gutReviewQuery,'cross_gut_id', $cross_gut_id);
                 }
             }
 
             // tennis_profileの項目で検索
             if($gender || $grip_form || $physique || $frequency || $play_style || $favarit_shot || $weak_shot) {
-                // tennis_profilesテーブルの値を使った時の検策関数
-                function searchWithJoinedTennisProfilesTable($gutReviewQuery, $searchColumn, $searchVal)
-                {
-                    // gutReviewqueryで使うサブクエリとしてtennis_profilesテーブルをusersテーブルでjoin
-                    $userTennisProfileSubQuery = \DB::table('tennis_profiles')
-                        ->select('user_id', 'gender', 'my_racket_id', 'grip_form', 'height', 'age', 'physique', 'experience_period', 'frequency', 'play_style', 'favarit_shot', 'weak_shot')
-                        ->join('users', 'tennis_profiles.user_id', '=', 'users.id');
-
-                    $gutReviewQuery
-                        ->select(
-                            'gut_reviews.id',
-                            'equipment_id',
-                            'match_rate',
-                            'pysical_durability',
-                            'performance_durability',
-                            'review',
-                            'gut_reviews.created_at',
-                            'gut_reviews.updated_at'
-                        )
-                        ->joinSub($userTennisProfileSubQuery, 'user_tennis_profile', function($join) {
-                            $join->on('gut_reviews.user_id', '=', 'user_tennis_profile.user_id');
-                        })
-                        ->where($searchColumn, '=', $searchVal);
-                }
-
+                // gutReviewqueryで使うサブクエリとしてtennis_profilesテーブルをusersテーブルでjoinする句
+                $userTennisProfileSubQuery = \DB::table('tennis_profiles')
+                    ->select('user_id', 'gender', 'my_racket_id', 'grip_form', 'height', 'age', 'physique', 'experience_period', 'frequency', 'play_style', 'favarit_shot', 'weak_shot')
+                    ->join('users', 'tennis_profiles.user_id', '=', 'users.id');
+                
+                // サブクエリである$userTennisProfileSubQueryの結果をを使ったgut_reviewsテーブルへのjoin句
+                $gutReviewQuery
+                    ->joinSub($userTennisProfileSubQuery, 'user_tennis_profile', function($join) {
+                        $join->on('gut_reviews.user_id', '=', 'user_tennis_profile.user_id');
+                    });
+                
+                // 検索
                 if($gender) {
-                    searchWithJoinedTennisProfilesTable($gutReviewQuery,'gender', $gender);
+                    searchGutReviewWithEqualityComparison($gutReviewQuery,'gender', $gender);
                 }
     
                 if($grip_form) {
-                    searchWithJoinedTennisProfilesTable($gutReviewQuery,'grip_form', $grip_form);
+                    searchGutReviewWithEqualityComparison($gutReviewQuery,'grip_form', $grip_form);
                 }
 
                 if($physique) {
-                    searchWithJoinedTennisProfilesTable($gutReviewQuery,'physique', $physique);
+                    searchGutReviewWithEqualityComparison($gutReviewQuery,'physique', $physique);
                 }
 
                 if($frequency) {
-                    searchWithJoinedTennisProfilesTable($gutReviewQuery,'frequency', $frequency);
+                    searchGutReviewWithEqualityComparison($gutReviewQuery,'frequency', $frequency);
                 }
 
                 if($play_style) {
-                    searchWithJoinedTennisProfilesTable($gutReviewQuery,'play_style', $play_style);
+                    searchGutReviewWithEqualityComparison($gutReviewQuery,'play_style', $play_style);
                 }
 
                 if($favarit_shot) {
-                    searchWithJoinedTennisProfilesTable($gutReviewQuery,'favarit_shot', $favarit_shot);
+                    searchGutReviewWithEqualityComparison($gutReviewQuery,'favarit_shot', $favarit_shot);
                 }
 
                 if($weak_shot) {
-                    searchWithJoinedTennisProfilesTable($gutReviewQuery,'weak_shot', $weak_shot);
+                    searchGutReviewWithEqualityComparison($gutReviewQuery,'weak_shot', $weak_shot);
                 }
             }
 
-            $searchedGutReview = $gutReviewQuery->with('myEquipment')->get();
+            // $searchedGutReview = $gutReviewQuery->with('myEquipment')->get();
+            $searchedGutReview = $gutReviewQuery->with([
+                'myEquipment' => [
+                    'user',
+                    'racket' => ['maker', 'racketImage'],
+                    'mainGut' => ['maker', 'gutImage'],
+                    'crossGut' => ['maker', 'gutImage'],
+                ]
+            ])->get();
 
             return response()->json($searchedGutReview, 200);
         } catch (\Throwable $e) {
