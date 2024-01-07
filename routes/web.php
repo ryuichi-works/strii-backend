@@ -54,6 +54,8 @@ Route::get('api/tennis_profiles/user/{userId}', [TennisProfileController::class,
 
 Route::apiResource('api/my_equipments', MyEquipmentController::class);
 Route::get('/api/my_equipments/user/{id}', [ MyEquipmentController::class, 'getAllEquipmentOfUser']);
+Route::get('/api/my_equipments/user/{id}/search', [ MyEquipmentController::class, 'searchEquipmentOfUser']);
+
 
 // Route::group(function() {
 //     Route::apiResource('api/my_equipments', MyEquipmentController::class);
