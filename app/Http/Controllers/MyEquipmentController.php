@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\MyEquipment;
+use App\Models\Racket;
+use App\Models\Gut;
 use App\Http\Requests\MyEquipment\MyEquipmentStoreRequest;
 use App\Http\Requests\MyEquipment\MyEquipmentUpdateRequest;
 
@@ -179,6 +181,113 @@ class MyEquipmentController extends Controller
             ])->paginate(8);
 
             return response()->json($user_equipments, 200);
+        } catch (\Throwable $e) {
+            \Log::error($e);
+
+            throw $e;
+        }
+    }
+
+    public function searchEquipmentOfUser(Request $request, $id)
+    {
+        try {
+            $severalWords = $request->query('several_words');
+
+            if ($severalWords) {
+                //全角スペースを半角に変換
+                $spaceConversion = mb_convert_kana($severalWords, 's');
+
+                // 単語を半角スペースで区切り、配列にする（例："山田 翔" → ["山田", "翔"]）
+                $severalWordsArray = preg_split('/[\s,]+/', $spaceConversion, -1, PREG_SPLIT_NO_EMPTY);
+            }
+
+            $stringing_way = $request->query('stringing_way');
+
+            $search_date = $request->query('search_date');
+            $date_range_type = $request->query('date_range_type');
+
+            if ($date_range_type === 'or_more') {
+                $range_type = '>=';
+            } elseif ($date_range_type === 'or_less') {
+                $range_type = '<=';
+            }
+
+            $userEquipmentsQuery = MyEquipment::query();
+
+            $userEquipmentsQuery->where('user_id', '=', $id);
+            
+            // gut張り方で検索
+            if ($stringing_way) {
+                $userEquipmentsQuery
+                    ->where('stringing_way', '=', $stringing_way);
+            }
+
+            // 日にち（ある日時以前、以後）で検索
+            if ($search_date && $date_range_type) {
+                $userEquipmentsQuery
+                    ->where('new_gut_date', $range_type, $search_date);
+            }
+
+            // キーワード検索
+            if ($severalWords) {
+                // racketsで検索query
+                $userEquipmentsQuery->where(function ($userEquipmentsQuery) use ($severalWordsArray) {
+                    foreach ($severalWordsArray as $searchWord) {
+                        // 一旦検索ワードでラケット一覧を取得
+                        $searchedRackets = Racket::where('name_ja', 'like', "%$searchWord%")
+                            ->orWhere('name_en', 'like', "%$searchWord%")->get();
+
+                        // 検索ラケット一覧結果があればqueryを生成
+                        if ($searchedRackets) {
+                            $userEquipmentsQuery->orWhere(function ($userEquipmentsQuery) use ($searchedRackets) {
+                                foreach ($searchedRackets as $racket) {
+                                    $userEquipmentsQuery->orWhere('my_equipments.racket_id', '=', (int) $racket->id);
+                                }
+                            });
+                        }
+                    }
+                });
+
+                // gutsで検索query
+                $userEquipmentsQuery->where(function ($userEquipmentsQuery) use ($severalWordsArray) {
+                    foreach ($severalWordsArray as $searchWord) {
+                        // 一旦検索ワードでgut一覧を取得
+                        $searchedGuts = Gut::where('name_ja', 'like', "%$searchWord%")
+                            ->orWhere('name_en', 'like', "%$searchWord%")->get();
+
+                        // 検索gut一覧結果があればqueryを生成
+                        if ($searchedGuts) {
+                            $userEquipmentsQuery->orWhere(function ($userEquipmentsQuery) use ($searchedGuts) {
+                                foreach ($searchedGuts as $gut) {
+                                    $userEquipmentsQuery
+                                        ->orWhere('my_equipments.main_gut_id', '=', (int) $gut->id)
+                                        ->orWhere('my_equipments.cross_gut_id', '=', (int) $gut->id);
+                                }
+                            });
+                        }
+                    }
+                });
+            }
+
+            // query確認用
+            // $sql = $userEquipmentsQuery->toSql();
+
+            $searchedUserEquipments = $userEquipmentsQuery
+                ->with([
+                    'user',
+                    'racket' => ['maker', 'racketImage'],
+                    'mainGut' => ['maker', 'gutImage'],
+                    'crossGut' => ['maker', 'gutImage']
+                ])
+                ->paginate(8)
+                ->appends([
+                    'several_words' => $severalWords,
+                    'stringing_way' => $stringing_way,
+                    'search_date' => $search_date,
+                    'date_range_type' => $date_range_type,
+                ]);
+
+            return response()->json($searchedUserEquipments, 200);
         } catch (\Throwable $e) {
             \Log::error($e);
 
