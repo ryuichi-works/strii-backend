@@ -138,7 +138,28 @@ class GutReviewController extends Controller
         $validated = $request->validated();
 
         try {
+            DB::beginTransaction();
+
             $gut_review = GutReview::findOrFail($id);
+
+            // my_equipmentも変更したい時の処理
+            if($validated['need_editing_my_equipment']) {
+                $myEquipment = MyEquipment::findOrFail($gut_review->equipment_id);
+
+                $myEquipment->user_height       = $validated['user_height'];
+                $myEquipment->user_age          = $validated['user_age'];
+                $myEquipment->experience_period = $validated['experience_period'];
+                $myEquipment->racket_id         = $validated['racket_id'];
+                $myEquipment->stringing_way     = $validated['stringing_way'];
+                $myEquipment->main_gut_id       = $validated['main_gut_id'];
+                $myEquipment->main_gut_guage    = $validated['main_gut_guage'];
+                $myEquipment->main_gut_tension  = $validated['main_gut_tension'];
+                $myEquipment->cross_gut_id      = $validated['cross_gut_id'];
+                $myEquipment->cross_gut_guage   = $validated['cross_gut_guage'];
+                $myEquipment->cross_gut_tension = $validated['cross_gut_tension'];
+
+                $myEquipment->save();
+            }
 
             $gut_review->match_rate = $validated['match_rate'];
             $gut_review->pysical_durability = $validated['pysical_durability'];
@@ -146,6 +167,8 @@ class GutReviewController extends Controller
             $gut_review->review = empty($validated['review']) ? '' : $validated['review'];
 
             if ($gut_review->save()) {
+                DB::commit();
+
                 return response()->json('ガットレビューを更新しました', 200);
             }
         } catch (\ModelNotFoundException $e) {

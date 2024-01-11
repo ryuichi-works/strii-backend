@@ -28,6 +28,21 @@ class GutReviewUpdateRequest extends FormRequest
             'pysical_durability' => ['required','numeric'],
             'performance_durability' => ['required','numeric'],
             'review' => ['nullable','string', 'max:500'],
+
+            // my_equipmentも更新するときに使用
+            'need_editing_my_equipment' => ['nullable', 'boolean'],
+            'user_height'       => ['nullable', 'string', 'max:20'],
+            'user_age'          => ['nullable', 'string', 'max:20'],
+            'experience_period' => ['nullable', 'integer'],
+            'racket_id'         => ['nullable', 'integer', 'exists:rackets,id'],
+            'stringing_way'     => ['nullable', 'string', 'max:20'],
+            'main_gut_id'       => ['nullable', 'integer', 'exists:guts,id'],
+            'main_gut_guage'    => ['nullable', 'numeric',],
+            'main_gut_tension'  => ['nullable', 'integer'],
+            'cross_gut_id'      => ['nullable', 'integer', 'exists:guts,id'],
+            'cross_gut_guage'   => ['nullable', 'numeric',],
+            'cross_gut_tension' => ['nullable', 'integer'],
+            'new_gut_date'      => ['nullable', 'date'],
         ];
     }
 }
