@@ -4,9 +4,11 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\GutReview;
+use App\Models\MyEquipment;
 use App\Http\Requests\GutReview\GutReviewStoreRequest;
 use App\Http\Requests\GutReview\GutReviewUpdateRequest;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class GutReviewController extends Controller
 {
@@ -44,18 +46,47 @@ class GutReviewController extends Controller
     public function store(GutReviewStoreRequest $request)
     {
         $validated = $request->validated();
-
-        $userId = Auth::guard('user')->id();
-
+        
         try {
+            DB::beginTransaction();
+
+            $userId = Auth::guard('user')->id();
+
+            $newMyEquipment = null;
+            
+            // gut_review登録前に新しくmy_equipmentの追加が必要なとき処理
+            if($validated['need_creating_my_equipment'] && empty($validated['equipment_id'])) {
+                $newMyEquipment = MyEquipment::create([
+                    'user_id'           => $userId,
+                    'user_height'       => $validated['user_height'],
+                    'user_age'          => $validated['user_age'],
+                    'expefience_period' => $validated['experience_period'],
+                    'racket_id'         => $validated['racket_id'],
+                    'stringing_way'     => $validated['stringing_way'],
+                    'main_gut_id'       => $validated['main_gut_id'],
+                    'main_gut_guage'    => $validated['main_gut_guage'],
+                    'main_gut_tension'  => $validated['main_gut_tension'],
+                    'cross_gut_id'      => $validated['cross_gut_id'],
+                    'cross_gut_guage'   => $validated['cross_gut_guage'],
+                    'cross_gut_tension' => $validated['cross_gut_tension'],
+                    'new_gut_date'      => $validated['new_gut_date'],
+                    'change_gut_date'   => null,
+                    'comment'           => ''
+                ]);
+            }
+
+            $equpmentId = $newMyEquipment ? $newMyEquipment->id : $validated['equipment_id'];
+
             $gut_review = GutReview::create([
                 'user_id' => $userId,
-                'equipment_id' => $validated['equipment_id'],
+                'equipment_id' => $equpmentId,
                 'match_rate' => $validated['match_rate'],
                 'pysical_durability' => $validated['pysical_durability'],
                 'performance_durability' => $validated['performance_durability'],
                 'review' => empty($validated['review']) ? '' : $validated['review']
             ]);
+
+            DB::commit();
 
             if ($gut_review) {
                 return response()->json('ガットレビューを投稿しました', 200);
