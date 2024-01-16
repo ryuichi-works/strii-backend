@@ -215,7 +215,7 @@ class GutReviewController extends Controller
             // 関連テーブルのmy_equipmentsでの検索項目
             $user_height = $request->query('user_height');
             $user_age = $request->query('user_age');
-            $experience_period = $request->query('experience_period');
+            $experience_period = (int) $request->query('experience_period');
             $racket_id = $request->query('racket_id');
             $stringing_way = $request->query('stringing_way');
             $main_gut_id = $request->query('main_gut_id');
@@ -272,7 +272,7 @@ class GutReviewController extends Controller
             }
 
             // gutReviewに紐つくmy_equipmentsの項目で検索
-            if($user_height || $user_age || $experience_period || $racket_id || $stringing_way || $main_gut_id || $cross_gut_id) {
+            if($user_height || $user_age || ($experience_period || $experience_period === 0) || $racket_id || $stringing_way || $main_gut_id || $cross_gut_id) {
                 // my_equipmentsテーブルの項目で検索するときは先にjoinさせておく
                 $gutReviewQuery->join('my_equipments', 'gut_reviews.equipment_id', '=', 'my_equipments.id');
                 
@@ -284,7 +284,7 @@ class GutReviewController extends Controller
                     searchGutReviewWithEqualityComparison($gutReviewQuery,'user_age', $user_age);
                 }
 
-                if($experience_period) {
+                if($experience_period || $experience_period === 0) {
                     searchGutReviewWithEqualityComparison($gutReviewQuery,'experience_period', $experience_period);
                 }
 
