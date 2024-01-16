@@ -215,7 +215,9 @@ class GutReviewController extends Controller
             // 関連テーブルのmy_equipmentsでの検索項目
             $user_height = $request->query('user_height');
             $user_age = $request->query('user_age');
-            $experience_period = (int) $request->query('experience_period');
+            $experience_period = $request->query('experience_period')
+                ?  (int) $request->query('experience_period')
+                : null;
             $racket_id = $request->query('racket_id');
             $stringing_way = $request->query('stringing_way');
             $main_gut_id = $request->query('main_gut_id');
