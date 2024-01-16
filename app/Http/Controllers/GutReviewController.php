@@ -285,7 +285,7 @@ class GutReviewController extends Controller
                 }
 
                 if($experience_period || $experience_period === 0) {
-                    searchGutReviewWithEqualityComparison($gutReviewQuery,'experience_period', $experience_period);
+                    searchGutReviewWithEqualityComparison($gutReviewQuery,'my_equipments.experience_period', $experience_period);
                 }
 
                 if($racket_id) {
