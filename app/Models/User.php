@@ -21,6 +21,7 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'file_path'
     ];
 
     /**
@@ -41,4 +42,19 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
+
+    public function tennisProfile()
+    {
+        return $this->hasOne(TennisProfile::class);
+    }
+
+    public function myEquipments()
+    {
+        return $this->hasMany(MyEquipment::class);
+    }
+
+    public function gutReviews()
+    {
+        return $this->hasMany(GutReview::class);
+    }
 }

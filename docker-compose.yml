@@ -1,0 +1,46 @@
+version: '3.8'
+
+services:
+  # web-front:
+  #   build: ./docker/node
+  #   container_name: web-front
+  #   ports:
+  #     - 3000:3000
+  #   volumes:
+  #     - ./src/frontend:/app
+  #   tty: true
+  web_backend:
+    build: ./docker/php
+    container_name: web_backend
+    tty: true
+    stdin_open: true
+    ports:
+      - 80:80
+      # - 8888:80
+      # - 8443:443
+    volumes:
+      # - ./src/backend:/var/www/html
+      # - ./:/var/www/html
+      - ./:/var/www/html/strii-backend
+      - ./docker/php/php.ini:/usr/local/etc/php/php.ini
+      - ./docker/php/apache/000-default.conf:/etc/apache2/sites-enabled/000-default.conf
+      # - ./docker/php/apache/default-ssl.conf:/etc/apache2/sites-enabled/default-ssl.conf
+    depends_on:
+      - db
+  db:
+    image: mysql:8.2
+    container_name: db
+    # restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: strii_db
+      MYSQL_USER: trainer
+      MYSQL_PASSWORD: trainer
+      TZ: 'Asia/Tokyo'
+    volumes:
+      # - ./db/data:/var/lib/mysql
+      # - ./db/my.cnf:/etc/mysql/conf.d/my.cnf
+      - ./docker/db/data:/var/lib/mysql
+      - ./docker/db/my.cnf:/etc/mysql/conf.d/my.cnf
+    ports:
+      - 3306:3306

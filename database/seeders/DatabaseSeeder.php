@@ -3,6 +3,10 @@
 namespace Database\Seeders;
 
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+
+use App\Models\GutImage;
+use App\Models\GutReview;
+use App\Models\MyEquipment;
 use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder
@@ -14,6 +18,19 @@ class DatabaseSeeder extends Seeder
      */
     public function run()
     {
+        $this->call([
+            MakerSeeder::class,
+            RacketImageSeeder::class,
+            GutImageSeeder::class,
+            GutSeeder::class,
+            RacketSeeder::class,
+            UserSeeder::class,
+            AdminSeeder::class,
+            TennisProfileSeeder::class,
+            MyEquipmentSeeder::class,
+            GutReviewSeeder::class
+        ]);
+
         // \App\Models\User::factory(10)->create();
 
         // \App\Models\User::factory()->create([
