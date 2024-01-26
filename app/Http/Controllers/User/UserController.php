@@ -96,10 +96,6 @@ class UserController extends Controller
 
                     $user->file_path = $trimedFilePath;
                 }
-
-
-
-                $user->file_path = $trimedFilePath;
             }
 
             $user->name = $validated['name'];
