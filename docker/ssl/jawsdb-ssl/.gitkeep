@@ -1,0 +1,1 @@
+; herokuで使っているjawsdbにssl接続するためにssl証明ファイルを使いたいがgitでそのssl証明ファイルは管理せずssl/jawsdb-sslフォルダのみ管理してほしいため.gitkeepファイルを作成した
