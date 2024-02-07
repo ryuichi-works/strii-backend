@@ -1,8 +1,6 @@
-###
-# このdocker-compose.ymlの内容はdocker-compose.develop.ymlとdocker-compose.production.ymlをコピーして使い分けられるものである
-# ペーストする際はこのコメントを残し、コメント以下にペーストすること
-# 使用した後はdocker-compose.develop.ymlをコピーし直してdevelop環境に戻すことを忘れないこと
-###
+# ・このファイルはローカルのdevelop環境でのymlファイルであり、
+# ローカル開発環境の時はこのdocker-compose.develop.ymlを同階層のdocker-compose.ymlにコピーして、
+# 同階層にあるdocker/php/Dockerfileを参照して使用すること
 version: '3.8'
 
 services:
