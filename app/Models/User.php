@@ -57,4 +57,14 @@ class User extends Authenticatable
     {
         return $this->hasMany(GutReview::class);
     }
+
+    public function rackets()
+    {
+        return $this->hasMany(Racket::class, 'posting_user_id', 'id');
+    }
+
+    public function racket_images()
+    {
+        return $this->hasMany(RacketImage::class, 'posting_user_id', 'id');
+    }
 }

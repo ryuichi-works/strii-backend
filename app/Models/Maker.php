@@ -32,4 +32,9 @@ class Maker extends Model
     {
         return $this->hasMany(RacketImage::class);
     }
+
+    public function racketSeries()
+    {
+        return $this->hasMany(RacketSeries::class);
+    }
 }

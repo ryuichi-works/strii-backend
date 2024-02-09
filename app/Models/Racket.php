@@ -36,4 +36,14 @@ class Racket extends Model
     {
         return $this->hasMany(MyEquipment::class);
     }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'posting_user_id', 'id');
+    }
+
+    public function series()
+    {
+        return $this->belongsTo(RacketSeries::class, 'series_id', 'id');
+    }
 }

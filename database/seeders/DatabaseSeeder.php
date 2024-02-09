@@ -20,15 +20,16 @@ class DatabaseSeeder extends Seeder
     {
         $this->call([
             MakerSeeder::class,
+            UserSeeder::class,
             RacketImageSeeder::class,
             GutImageSeeder::class,
             GutSeeder::class,
+            RacketSeriesSeeder::class,
             RacketSeeder::class,
-            UserSeeder::class,
             AdminSeeder::class,
             TennisProfileSeeder::class,
             MyEquipmentSeeder::class,
-            GutReviewSeeder::class
+            GutReviewSeeder::class,
         ]);
 
         // \App\Models\User::factory(10)->create();

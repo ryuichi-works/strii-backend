@@ -39,7 +39,7 @@ class GutSeeder extends Seeder
                 'name_ja' => 'プロハリケーンツアー',
                 'name_en' => '',
                 'maker_id' => 2,
-                'image_id' => null,
+                'image_id' => 1,
                 'need_posting_image' => true,
                 'created_at' => Carbon::now(),
                 'updated_at' => Carbon::now()
