@@ -18,6 +18,7 @@ class GutReviewSeeder extends Seeder
     {
         DB::table('gut_reviews')->insert([
             [
+                'user_id' => 1,
                 'equipment_id' => 1,
                 'match_rate' => 4.5,
                 'pysical_durability' => 2.5,
@@ -27,6 +28,7 @@ class GutReviewSeeder extends Seeder
                 'updated_at' => Carbon::now()
             ],
             [
+                'user_id' => 2,
                 'equipment_id' => 2,
                 'match_rate' => 4.5,
                 'pysical_durability' => 2.5,
@@ -36,6 +38,7 @@ class GutReviewSeeder extends Seeder
                 'updated_at' => Carbon::now()
             ],
             [
+                'user_id' => 3,
                 'equipment_id' => 3,
                 'match_rate' => 4.5,
                 'pysical_durability' => 2.5,

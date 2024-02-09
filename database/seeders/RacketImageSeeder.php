@@ -18,6 +18,7 @@ class RacketImageSeeder extends Seeder
     {
         DB::table('racket_images')->insert([
             [
+                'posting_user_id' => 1,
                 'file_path' => 'images/rackets/default_racket_image.png',
                 'title' => 'デフォルトラケットイメージ',
                 'maker_id' => 1,
@@ -25,6 +26,7 @@ class RacketImageSeeder extends Seeder
                 'updated_at' => Carbon::now()
             ],
             [
+                'posting_user_id' => 2,
                 'file_path' => 'images/rackets/default_racket_image1.jpg',
                 'title' => 'ピュアアエロ',
                 'maker_id' => 3,
@@ -32,6 +34,7 @@ class RacketImageSeeder extends Seeder
                 'updated_at' => Carbon::now()
             ],
             [
+                'posting_user_id' => 3,
                 'file_path' => 'images/rackets/default_racket_image2.jpg',
                 'title' => 'ブレード',
                 'maker_id' => 4,
@@ -39,6 +42,7 @@ class RacketImageSeeder extends Seeder
                 'updated_at' => Carbon::now()
             ],
             [
+                'posting_user_id' => 3,
                 'file_path' => 'images/rackets/default_racket_image3.jpg',
                 'title' => 'プロスタッフ',
                 'maker_id' => 4,
@@ -46,6 +50,7 @@ class RacketImageSeeder extends Seeder
                 'updated_at' => Carbon::now()
             ],
             [
+                'posting_user_id' => 1,
                 'file_path' => 'images/rackets/default_racket_image4.jpg',
                 'title' => 'v コア100',
                 'maker_id' => 2,
@@ -53,6 +58,7 @@ class RacketImageSeeder extends Seeder
                 'updated_at' => Carbon::now()
             ],
             [
+                'posting_user_id' => 1,
                 'file_path' => 'images/rackets/default_racket_image5.jpg',
                 'title' => 'スピード',
                 'maker_id' => 5,
@@ -60,6 +66,7 @@ class RacketImageSeeder extends Seeder
                 'updated_at' => Carbon::now()
             ],
             [
+                'posting_user_id' => 2,
                 'file_path' => 'images/rackets/default_racket_image6.jpg',
                 'title' => 'o3',
                 'maker_id' => 6,
@@ -67,6 +74,7 @@ class RacketImageSeeder extends Seeder
                 'updated_at' => Carbon::now()
             ],
             [
+                'posting_user_id' => 3,
                 'file_path' => 'images/rackets/default_racket_image7.jpg',
                 'title' => 'ピュアドライブ',
                 'maker_id' => 3,

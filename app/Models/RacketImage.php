@@ -24,4 +24,9 @@ class RacketImage extends Model
     {
         return $this->belongsTo(Maker::class);
     }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'posting_user_id', 'id');
+    }
 }
