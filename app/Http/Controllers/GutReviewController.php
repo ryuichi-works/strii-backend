@@ -145,10 +145,7 @@ class GutReviewController extends Controller
             // my_equipmentも変更したい時の処理
             if($validated['need_editing_my_equipment']) {
                 $myEquipment = MyEquipment::findOrFail($gut_review->equipment_id);
-
-                $myEquipment->user_height       = $validated['user_height'];
-                $myEquipment->user_age          = $validated['user_age'];
-                $myEquipment->experience_period = $validated['experience_period'];
+                
                 $myEquipment->racket_id         = $validated['racket_id'];
                 $myEquipment->stringing_way     = $validated['stringing_way'];
                 $myEquipment->main_gut_id       = $validated['main_gut_id'];
