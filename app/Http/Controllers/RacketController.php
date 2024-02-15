@@ -113,11 +113,17 @@ class RacketController extends Controller
         try {
             $racket = Racket::findOrFail($id);
 
-            $racket->name_ja = $validated['name_ja'];
-            $racket->name_en = $validated['name_en'];
-            $racket->maker_id = $validated['maker_id'];
-            $racket->image_id = isset($validated['image_id']) ? $validated['image_id'] : null;
-            $racket->need_posting_image = $validated['need_posting_image'];
+            $racket->name_ja  = isset($validated['name_ja']) ? $validated['name_ja'] : $racket->name_ja;
+            $racket->name_en  = isset($validated['name_en']) ? $validated['name_en'] : $racket->name_en;
+            $racket->maker_id = isset($validated['maker_id']) ? $validated['maker_id'] : $racket->maker_id;
+            $racket->image_id = isset($validated['image_id']) ? $validated['image_id'] : $racket->image_id;
+            $racket->need_posting_image = isset($validated['need_posting_image']) ? $validated['need_posting_image'] : $racket->need_posting_image;
+            $racket->posting_user_id = isset($validated['posting_user_id']) ? $validated['posting_user_id'] : $racket->posting_user_id;
+            $racket->series_id = isset($validated['series_id']) ? $validated['series_id'] : $racket->series_id;
+            $racket->head_size = isset($validated['head_size']) ? $validated['head_size'] : $racket->head_size;
+            $racket->pattern   = isset($validated['pattern']) ? $validated['pattern'] : $racket->pattern;
+            $racket->weight    = isset($validated['weight']) ? $validated['weight'] : $racket->weight;
+            $racket->balance   = isset($validated['balance']) ? $validated['balance'] : $racket->balance;
 
             if ($racket->save()) {
                 return response()->json('ラケット情報を更新しました', 200);
