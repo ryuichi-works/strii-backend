@@ -55,6 +55,12 @@ class RacketController extends Controller
                 'maker_id' => $validated['maker_id'],
                 'image_id' => isset($validated['image_id']) ? $validated['image_id'] : null,
                 'need_posting_image' => $validated['need_posting_image'],
+                'posting_user_id' => $validated['posting_user_id'],
+                'series_id' => isset($validated['series_id']) ? $validated['series_id'] : null,
+                'head_size' => isset($validated['head_size']) ? $validated['head_size'] : null,
+                'pattern' => $validated['pattern'],
+                'weight' => isset($validated['weight']) ? $validated['weight'] : null,
+                'balance' => isset($validated['balance']) ? $validated['balance'] : null,
             ]);
 
             if ($racket) {

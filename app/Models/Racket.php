@@ -14,7 +14,14 @@ class Racket extends Model
         'name_en',
         'maker_id',
         'image_id',
-        'need_posting_image'
+        'need_posting_image',
+        'posting_user_id',
+        'series_id',
+        'head_size',
+        'pattern',
+        'weight',
+        'balance',
+        'agreement',
     ];
 
     public function maker()
