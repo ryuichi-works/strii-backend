@@ -194,8 +194,6 @@ class RacketController extends Controller
         return response()->json($responseRackets, 200);
     }
 
-
-
     public function racketSearch(Request $request)
     {
         $severalWords = $request->query('several_words');
@@ -209,39 +207,79 @@ class RacketController extends Controller
         }
 
         $maker_id = $request->query('maker');
+        $series_id = $request->query('series_id');
+        $head_size = $request->query('head_size');
+        $pattern = $request->query('pattern');
+        $weight = $request->query('weight');
+        $balance = $request->query('balance');
 
         $racketQuery = Racket::query();
 
-        if ($severalWords && $maker_id) {
-            foreach ($severalWordsArray as $word) {
-                //severalWordsで複数取れてきてもmakerが一致しない場合は弾かれる
-                $racketQuery
-                    ->orWhere(function ($racketQuery) use ($word, $maker_id) {
-                        $racketQuery
-                            ->where(function ($racketQuery) use ($word, $maker_id) {
-                                $racketQuery
-                                    ->orWhere('name_ja', 'like', '%' . $word . '%')
-                                    ->orWhere('name_en', 'like', '%' . $word . '%');
-                            })
-                            ->where('maker_id', '=', $maker_id);
-                    });
-            }
-        } elseif ($severalWords && empty($maker_id)) {
-            //makerの指定がないのでseveralWordsのor検索となる
-            foreach ($severalWordsArray as $word) {
-                $racketQuery
-                    ->orWhere('name_ja', 'like', '%' . $word . '%')
-                    ->orWhere('name_en', 'like', '%' . $word . '%');
-            }
-        } elseif (empty($severalWords) && $maker_id) {
-            //makerのみでの検索
-            $racketQuery->where('maker_id', '=', $maker_id);
+        // メーカーで検索
+        if ($maker_id) {
+            $racketQuery->where(function ($racketQuery) use ($maker_id) {
+                $racketQuery->where('maker_id', '=', $maker_id);
+            });
+        }
+
+        // ラケットシリーズで検索
+        if ($series_id) {
+            $racketQuery->where(function ($racketQuery) use ($series_id) {
+                $racketQuery->where('series_id', '=', $series_id);
+            });
+        }
+
+        // ヘッドサイズで検索
+        if ($head_size) {
+            $racketQuery->where(function ($racketQuery) use ($head_size) {
+                $racketQuery->where('head_size', '=', $head_size);
+            });
+        }
+
+        // ストリングパターンで検索
+        if ($pattern) {
+            $racketQuery->where(function ($racketQuery) use ($pattern) {
+                $racketQuery->where('pattern', '=', $pattern);
+            });
+        }
+
+        // 重さで検索
+        if ($weight) {
+            $racketQuery->where(function ($racketQuery) use ($weight) {
+                $racketQuery->where('weight', '=', $weight);
+            });
+        }
+
+        // バランスポイントで検索
+        if ($balance) {
+            $racketQuery->where(function ($racketQuery) use ($balance) {
+                $racketQuery->where('balance', '=', $balance);
+            });
+        }
+
+        // キーワード検索
+        if ($severalWords) {
+            $racketQuery->where(function ($racketQuery) use ($severalWordsArray) {
+                foreach ($severalWordsArray as $word) {
+                    $racketQuery
+                        ->orWhere('name_ja', 'like', '%' . $word . '%')
+                        ->orWhere('name_en', 'like', '%' . $word . '%');
+                }
+            });
         }
 
         $searchedRackets = $racketQuery
             ->with(['maker', 'racketImage'])
             ->paginate(8)
-            ->appends(['several_words' => $severalWords, 'maker' => $maker_id]);
+            ->appends([
+                'several_words' => $severalWords,
+                'maker' => $maker_id,
+                'series_id' => $series_id,
+                'head_size' => $head_size,
+                'pattern' => $pattern,
+                'weight' => $weight,
+                'balance' => $balance,
+            ]);
 
         return response()->json($searchedRackets, 200);
     }
