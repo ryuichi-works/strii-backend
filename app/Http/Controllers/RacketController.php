@@ -12,7 +12,7 @@ class RacketController extends Controller
 {
     public function __construct()
     {
-        $this->middleware('auth:admin')->only(['store', 'update', 'destroy']);
+        $this->middleware('auth:admin')->only(['update', 'destroy']);
     }
 
     /**
