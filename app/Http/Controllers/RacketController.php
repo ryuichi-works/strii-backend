@@ -23,7 +23,12 @@ class RacketController extends Controller
     public function index()
     {
         try {
-            $rackets = Racket::with(['maker', 'racketImage'])->paginate(8);
+            $rackets = Racket::with([
+                'maker',
+                'racketImage',
+                'user',
+                'series'
+            ])->paginate(8);
 
             return response()->json($rackets, 200);
         } catch (\Throwable $e) {
@@ -71,7 +76,12 @@ class RacketController extends Controller
     public function show($id)
     {
         try {
-            $racket = Racket::with(['maker', 'racketImage'])->findOrFail($id);
+            $racket = Racket::with([
+                'maker',
+                'racketImage',
+                'user',
+                'series',
+            ])->findOrFail($id);
 
             return response()->json($racket, 200);
         } catch (\ModelNotFoundException $e) {
