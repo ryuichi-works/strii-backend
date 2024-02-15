@@ -64,7 +64,7 @@ class RacketSeriesController extends Controller
     public function show($id)
     {
         try {
-            $racketSeries = RacketSeries::findOrFail($id);
+            $racketSeries = RacketSeries::with('maker')->findOrFail($id);
 
             return response()->json($racketSeries, 200);
         } catch (ModelNotFoundException $e) {
