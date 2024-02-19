@@ -41,12 +41,12 @@ class RacketImageController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(RacketImageStoreRequest $request, RacketImage $racketImageModel)
+    public function store(RacketImageStoreRequest $request)
     {
         $validated_request = $request->validated();
 
         try {
-            $racket_image = $racketImageModel->registerRacketImage($validated_request);
+            $racket_image = RacketImage::registerRacketImage($validated_request);
 
             if (isset($racket_image)) {
                 $maker = Maker::find($racket_image->maker_id);

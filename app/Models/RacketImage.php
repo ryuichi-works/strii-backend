@@ -36,7 +36,7 @@ class RacketImage extends Model
     // dbリクエスト処理関連
 
     // ラケット画像登録処理
-    public function registerRacketImage($request)
+    public static function registerRacketImage($request)
     {
         // 画像ファイルリサイジング
         $file = Image::make($request['file']);

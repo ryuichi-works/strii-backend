@@ -46,7 +46,7 @@ class RacketController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(RacketStoreRequest $request, RacketImage $racketImageModel)
+    public function store(RacketStoreRequest $request)
     {
         $validated = $request->validated();
 
@@ -54,7 +54,8 @@ class RacketController extends Controller
             DB::beginTransaction();
 
             // RacketImageモデルを使ってラケット画像を登録
-            $racketImage = $racketImageModel->registerRacketImage($validated);
+            $racketImage = RacketImage::registerRacketImage($validated);
+            
 
             $racket = Racket::with([
                 'maker',
