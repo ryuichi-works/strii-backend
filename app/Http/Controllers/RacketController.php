@@ -6,7 +6,9 @@ use Illuminate\Http\Request;
 use App\Models\Racket;
 use App\Http\Requests\Racket\RacketStoreRequest;
 use App\Http\Requests\Racket\RacketUpdateRequest;
+use App\Models\RacketImage;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class RacketController extends Controller
 {
@@ -49,11 +51,22 @@ class RacketController extends Controller
         $validated = $request->validated();
 
         try {
-            $racket = Racket::create([
+            DB::beginTransaction();
+
+            // RacketImageモデルを使ってラケット画像を登録
+            $racketImage = RacketImage::registerRacketImage($validated);
+            
+
+            $racket = Racket::with([
+                'maker',
+                'racketImage',
+                'user',
+                'series'
+            ])->create([
                 'name_ja' => $validated['name_ja'],
-                'name_en' => $validated['name_en'],
+                'name_en' => isset($validated['name_en']) ? $validated['name_en'] : '',
                 'maker_id' => $validated['maker_id'],
-                'image_id' => isset($validated['image_id']) ? $validated['image_id'] : null,
+                'image_id' => $racketImage->id,
                 'need_posting_image' => $validated['need_posting_image'],
                 'posting_user_id' => $validated['posting_user_id'],
                 'series_id' => isset($validated['series_id']) ? $validated['series_id'] : null,
@@ -63,10 +76,21 @@ class RacketController extends Controller
                 'balance' => isset($validated['balance']) ? $validated['balance'] : null,
             ]);
 
+            DB::commit();
+
+            
             if ($racket) {
-                return response()->json('ラケットを登録しました', 200);
+                $responseRacket = Racket::with([
+                    'maker',
+                    'racketImage',
+                    'user',
+                    'series',
+                ])->findOrFail($racket->id);
+                return response()->json($responseRacket, 200);
             }
         } catch (\Throwable $e) {
+            DB::rollBack();
+
             \Log::error($e);
 
             throw $e;
