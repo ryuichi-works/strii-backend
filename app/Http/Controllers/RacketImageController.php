@@ -41,51 +41,22 @@ class RacketImageController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(RacketImageStoreRequest $request)
+    public function store(RacketImageStoreRequest $request, RacketImage $racketImageModel)
     {
         $validated_request = $request->validated();
 
         try {
-            // 画像ファイルリサイジング
-            $file = Image::make($request->file('file'));
-            $file->orientate();
-            $file->resize(
-                480,
-                null,
-                function ($constraint) {
-                    // 縦横比を保持したままにする
-                    $constraint->aspectRatio();
-                    // 小さい画像は大きくしない
-                    $constraint->upsize();
-                }
-            );
-
-            $filename = now()->format('YmdHis') . $validated_request['title'] . "." . $request->file('file')->extension();
-
-            // storageに登録するためのpathを生成
-            $storagePath = storage_path('app/public/images/rackets');
-            $fileLocationFullPath = $storagePath . '/' . $filename;
-
-            if ($file->save($fileLocationFullPath)) {
-                // "/var/www/html/strii-backend/storage/app/public/images/rackets/20240105123954リサイズ確認５.jpg"
-                // intervension image導入前の登録の仕様に合わせるため
-                // 上記のようなfullPathをDBのfile_pathカラム用に整形
-                $trimedFilePath = strstr($fileLocationFullPath, 'images');
-
-                $racket_image = RacketImage::create([
-                    'file_path' => $trimedFilePath,
-                    'title' => $validated_request['title'],
-                    'maker_id' => $validated_request['maker_id']
-                ]);
-            }
+            $racket_image = $racketImageModel->registerRacketImage($validated_request);
 
             if (isset($racket_image)) {
                 $maker = Maker::find($racket_image->maker_id);
 
                 return response()->json([
+                    'id' => $racket_image['id'],
                     'file_path' => Storage::url($racket_image['file_path']),
                     'title' => $racket_image['title'],
-                    'maker' => $maker
+                    'maker' => $maker,
+                    'posting_user_id' => $racket_image['posting_user_id']
                 ], 200);
             }
         } catch (\Throwable $e) {
@@ -136,7 +107,7 @@ class RacketImageController extends Controller
             $image = RacketImage::with('maker')->findOrFail($id);
 
             //新しいファイルがあれば新たにstorageに登録
-            if($request->file('file')) {
+            if ($request->file('file')) {
                 // 画像ファイルリサイジング
                 $file = Image::make($request->file('file'));
                 $file->orientate();
@@ -173,7 +144,7 @@ class RacketImageController extends Controller
             $image->title = $validated_request['title'];
             $image->maker_id = $validated_request['maker_id'];
 
-            if($image->save()) {
+            if ($image->save()) {
                 $maker = Maker::find($image->maker_id);
 
                 return response()->json([

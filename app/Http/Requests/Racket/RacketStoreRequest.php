@@ -38,6 +38,11 @@ class RacketStoreRequest extends FormRequest
             'weight' => ['nullable', 'integer', 'max:400'],
             'balance' => ['nullable', 'integer', 'max:400'],
             'agreement' => ['required', 'boolean', new AgreementConfirmation],
+            
+            // ラケット画像を同時に登録するため個別で必要
+            // maker_id, posting_user_idは共有
+            'file' => ['required', 'file', 'image', 'mimes:jpeg,png'],
+            'title' => ['required', 'max:30'],
         ];
     }
 }

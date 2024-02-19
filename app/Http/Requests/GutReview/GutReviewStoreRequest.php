@@ -35,19 +35,19 @@ class GutReviewStoreRequest extends FormRequest
             // 未登録のmy_equpipmentでレビューを投稿しようとした場合
             // gut_reviewと同時にmy_equipment新規登録するために使用
             'need_creating_my_equipment' => ['nullable', 'boolean'],
-            'user_height'       => ['nullable', 'string', 'max:20'],
-            'user_age'          => ['nullable', 'string', 'max:20'],
-            'experience_period' => ['nullable', 'integer'],
+            'user_height'       => ['required_if:need_creating_my_equipment,true', 'string', 'max:20'],
+            'user_age'          => ['required_if:need_creating_my_equipment,true', 'string', 'max:20'],
+            'experience_period' => ['required_if:need_creating_my_equipment,true', 'integer'],
 
-            'racket_id'         => ['nullable', 'integer', 'exists:rackets,id'],
-            'stringing_way'     => ['nullable', 'string', 'max:20'],
-            'main_gut_id'       => ['nullable', 'integer', 'exists:guts,id'],
-            'main_gut_guage'    => ['nullable', 'numeric',],
-            'main_gut_tension'  => ['nullable', 'integer'],
-            'cross_gut_id'      => ['nullable', 'integer', 'exists:guts,id'],
-            'cross_gut_guage'   => ['nullable', 'numeric',],
-            'cross_gut_tension' => ['nullable', 'integer'],
-            'new_gut_date'      => ['nullable', 'date'],
+            'racket_id'         => ['required_if:need_creating_my_equipment,true', 'integer', 'exists:rackets,id'],
+            'stringing_way'     => ['required_if:need_creating_my_equipment,true', 'string', 'max:20'],
+            'main_gut_id'       => ['required_if:need_creating_my_equipment,true', 'integer', 'exists:guts,id'],
+            'main_gut_guage'    => ['required_if:need_creating_my_equipment,true', 'numeric',],
+            'main_gut_tension'  => ['required_if:need_creating_my_equipment,true', 'integer'],
+            'cross_gut_id'      => ['required_if:need_creating_my_equipment,true', 'integer', 'exists:guts,id'],
+            'cross_gut_guage'   => ['required_if:need_creating_my_equipment,true', 'numeric',],
+            'cross_gut_tension' => ['required_if:need_creating_my_equipment,true', 'integer'],
+            'new_gut_date'      => ['required_if:need_creating_my_equipment,true', 'date'],
         ];
     }
 }
