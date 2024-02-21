@@ -19,16 +19,9 @@ class GutImageSeeder extends Seeder
     {
         DB::table('gut_images')->insert([
             [
-                'file_path' => 'images/guts/default_gut.jpg',
-                'title' => 'ポリツアープロ',
-                'maker_id' => 1,
-                'created_at' => Carbon::now(),
-                'updated_at' => Carbon::now()
-            ],
-            [
-                'file_path' => 'images/guts/sample_image2.jpg',
-                'title' => 'ポリツアープロ',
-                'maker_id' => 1,
+                'file_path' => 'images/guts/default_gut_image.jpg',
+                'title' => 'デフォルト',
+                'maker_id' => null,
                 'created_at' => Carbon::now(),
                 'updated_at' => Carbon::now()
             ],

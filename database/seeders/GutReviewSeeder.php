@@ -47,6 +47,66 @@ class GutReviewSeeder extends Seeder
                 'created_at' => Carbon::now(),
                 'updated_at' => Carbon::now()
             ],
+            [
+                'user_id' => 1,
+                'equipment_id' => 4,
+                'match_rate' => 4.5,
+                'pysical_durability' => 2.5,
+                'performance_durability' => 1.5,
+                'review' => 'すごくいいストリングだと思います',
+                'created_at' => Carbon::now(),
+                'updated_at' => Carbon::now()
+            ],
+            [
+                'user_id' => 2,
+                'equipment_id' => 5,
+                'match_rate' => 4.5,
+                'pysical_durability' => 2.5,
+                'performance_durability' => 1.5,
+                'review' => 'すごくいいストリングだと思います',
+                'created_at' => Carbon::now(),
+                'updated_at' => Carbon::now()
+            ],
+            [
+                'user_id' => 3,
+                'equipment_id' => 6,
+                'match_rate' => 4.5,
+                'pysical_durability' => 2.5,
+                'performance_durability' => 1.5,
+                'review' => 'すごくいいストリングだと思います',
+                'created_at' => Carbon::now(),
+                'updated_at' => Carbon::now()
+            ],
+            [
+                'user_id' => 1,
+                'equipment_id' => 7,
+                'match_rate' => 4.5,
+                'pysical_durability' => 2.5,
+                'performance_durability' => 1.5,
+                'review' => 'すごくいいストリングだと思います',
+                'created_at' => Carbon::now(),
+                'updated_at' => Carbon::now()
+            ],
+            [
+                'user_id' => 2,
+                'equipment_id' => 8,
+                'match_rate' => 4.5,
+                'pysical_durability' => 2.5,
+                'performance_durability' => 1.5,
+                'review' => 'すごくいいストリングだと思います',
+                'created_at' => Carbon::now(),
+                'updated_at' => Carbon::now()
+            ],
+            [
+                'user_id' => 3,
+                'equipment_id' => 9,
+                'match_rate' => 4.5,
+                'pysical_durability' => 2.5,
+                'performance_durability' => 1.5,
+                'review' => 'すごくいいストリングだと思います',
+                'created_at' => Carbon::now(),
+                'updated_at' => Carbon::now()
+            ],
         ]);
     }
 }
