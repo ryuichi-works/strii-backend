@@ -35,6 +35,7 @@ Route::get('/', function () {
 
 Route::apiResource('api/makers', MakerController::class);
 
+Route::post('api/racket_series/upload_csv', [RacketSeriesController::class, 'storeByCsv']);
 Route::apiResource('api/racket_series', RacketSeriesController::class);
 
 Route::get('api/gut_images/search', [GutImageController::class, 'gutImageSearch']);
