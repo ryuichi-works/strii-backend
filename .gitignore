@@ -20,3 +20,4 @@ yarn-error.log
 .DS_Store
 /docker/db/data/*
 /docker/ssl/jawsdb-ssl/*.pem
+/docker/csv/*.csv
