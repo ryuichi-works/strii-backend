@@ -142,53 +142,9 @@ class RacketSeriesController extends Controller
     public function storeByCsv(RacketSeriesStoreByCsvRequest $request)
     {
         try {
-            if (!$request->hasFile('csv_file')) {
-                throw new Error('ファイルが存在しません');
-            }
+            RacketSeries::storeByCsv($request);
 
-            // ファイルを取得
-            $csvFile = $request->file('csv_file');
-
-            // ファイルの拡張子をチェック
-            if ($csvFile->extension() !== 'csv') {
-                throw new Error('ファイルの形式が不正なものです');
-            }
-
-            // csvを配列に変換。
-            // file()はファイル全体を読み込んで配列に格納
-            // str_getcsvはphpの関数でCSV文字列をパースして配列に格納
-            $csvData = array_map('str_getcsv', file($csvFile));
-
-            // csvの一行目がデータでなくheaderなので$csvDataから抽出・削除
-            $header = array_shift($csvData);
-
-            $validatedCsvData = [];
-
-            // csvデータのバリデーションチェック
-            foreach ($csvData as $row) {
-                // array_combineでキーとバリューの連勝配列に変換し検証
-                $validator = Validator::make(array_combine($header, $row), RacketSeries::rules());
-
-                // バリデーションエラーがある場合の処理
-                if ($validator->fails()) {
-                    throw new Error($validator->errors());
-                }
-
-                array_push($validatedCsvData, $row);
-            }
-
-            // バリデーションを通過していれば登録
-            if ($validatedCsvData) {
-                foreach ($validatedCsvData as $data) {
-                    RacketSeries::create([
-                        'name_ja' => $data[0],
-                        'name_en' => $data[1],
-                        'maker_id' => $data[2],
-                    ]);
-                }
-
-                return response()->json('csvデータを登録しました', 200);
-            }
+            return response()->json('csvデータを登録しました', 200);
         } catch (\Throwable $e) {
             \Log::error($e);
 
