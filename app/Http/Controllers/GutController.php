@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\Gut\GutStoreByCsvRequest;
 use App\Http\Requests\Gut\GutStoreRequest;
 use App\Http\Requests\Gut\GutUpdateRequest;
 use Illuminate\Http\Request;
@@ -226,5 +227,19 @@ class GutController extends Controller
             ->appends(['several_words' => $severalWords, 'maker' => $maker_id]);
 
         return response()->json($searchedGuts, 200);
+    }
+
+    // public function storeByCsv(Request $request)
+    public function storeByCsv(GutStoreByCsvRequest $request)
+    {
+        try {
+            Gut::storeByCsv($request);
+
+            return response()->json('csvデータを登録しました', 200);
+        } catch (\Throwable $e) {
+            \Log::error($e);
+
+            return $e;
+        }
     }
 }

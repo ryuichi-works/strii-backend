@@ -35,6 +35,7 @@ Route::get('/', function () {
 
 Route::apiResource('api/makers', MakerController::class);
 
+Route::post('api/racket_series/upload_csv', [RacketSeriesController::class, 'storeByCsv']);
 Route::apiResource('api/racket_series', RacketSeriesController::class);
 
 Route::get('api/gut_images/search', [GutImageController::class, 'gutImageSearch']);
@@ -43,6 +44,7 @@ Route::apiResource('api/gut_images', GutImageController::class);
 Route::get('api/racket_images/search', [RacketImageController::class, 'racketImageSearch']);
 Route::apiResource('api/racket_images', RacketImageController::class);
 
+Route::post('api/guts/upload_csv', [GutController::class, 'storeByCsv']);
 Route::get('api/guts/search', [GutController::class, 'gutSearch']);
 Route::apiResource('api/guts', GutController::class);
 Route::get('api/guts/{id}/others', [GutController::class, 'getRandamOtherGuts']);
