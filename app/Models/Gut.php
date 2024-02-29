@@ -17,7 +17,9 @@ class Gut extends Model
         'name_en',
         'maker_id',
         'image_id',
-        'need_posting_image'
+        'need_posting_image',
+        'guage',
+        'category'
     ];
 
     public static function rules()
@@ -27,7 +29,9 @@ class Gut extends Model
             'name_en' => ['max:30'],
             'maker_id' => ['required', 'integer', 'exists:makers,id'],
             'image_id' => ['sometimes', 'integer', 'exists:gut_images,id'],
-            'need_posting_image' => ['required', 'boolean']
+            'need_posting_image' => ['required', 'boolean'],
+            'guage' => ['max:30'],
+            'category' => ['max:30'],
         ];
     }
 
@@ -54,7 +58,7 @@ class Gut extends Model
 
     // csvファイルで登録
     // csvファイルの一行目はheaderとして下記を想定
-    // 「name_ja,name_en,maker_id,image_id,need_posting_image」下記を想定
+    // 「name_ja,name_en,maker_id,image_id,need_posting_image,guage,category」
     public static function storeByCsv($request)
     {
         if (!$request->hasFile('csv_file')) {
@@ -84,14 +88,13 @@ class Gut extends Model
         // csvデータのバリデーションチェック
         foreach ($csvData as $row) {
             // array_combineでキーとバリューの連勝配列に変換し検証
-            // $validator = Validator::make(array_combine($header, $row), RacketSeries::rules());
             $validator = Validator::make(array_combine($header, $row), self::rules());
 
             // バリデーションエラーがある場合の処理
             if ($validator->fails()) {
                 $errors = $validator->errors();
-                $errorHeader = "[{$header[0]},{$header[1]},{$header[2]},{$header[3]},{$header[4]}]";
-                $errorRow = "[{$row[0]},{$row[1]},{$row[2]},{$row[3]},{$row[4]}]";
+                $errorHeader = "[{$header[0]},{$header[1]},{$header[2]},{$header[3]},{$header[4]},{$header[5]},{$header[6]}]";
+                $errorRow = "[{$row[0]},{$row[1]},{$row[2]},{$row[3]},{$row[4]},{$row[5]},{$row[6]}]";
 
                 throw new Exception(
                     "{$errorHeader}{$errorRow}:{$errors}"
@@ -110,6 +113,8 @@ class Gut extends Model
                     'maker_id' => $data[2],
                     'image_id' => $data[3],
                     'need_posting_image' => $data[4] ? $data[4] : true,
+                    'guage' => $data[5] ? $data[5] : '',
+                    'category' => $data[6] ? $data[6] : '',
                 ]);
             }
         }

@@ -23,6 +23,8 @@ class GutSeeder extends Seeder
                 'maker_id' => 2,
                 'image_id' => 1,
                 'need_posting_image' => true,
+                'guage' => '1.15/1.20/1.25/1.30',
+                'category' => 'ポリエステル',
                 'created_at' => Carbon::now(),
                 'updated_at' => Carbon::now()
             ],
@@ -32,6 +34,8 @@ class GutSeeder extends Seeder
                 'maker_id' => 5,
                 'image_id' => 1,
                 'need_posting_image' => true,
+                'guage' => '1.20/1.25/1.30/1.35',
+                'category' => 'ポリエステル',
                 'created_at' => Carbon::now(),
                 'updated_at' => Carbon::now()
             ],
@@ -41,6 +45,8 @@ class GutSeeder extends Seeder
                 'maker_id' => 5,
                 'image_id' => 1,
                 'need_posting_image' => true,
+                'guage' => '1.20/1.25/1.30',
+                'category' => 'ポリエステル',
                 'created_at' => Carbon::now(),
                 'updated_at' => Carbon::now()
             ],
@@ -50,6 +56,8 @@ class GutSeeder extends Seeder
                 'maker_id' => 4,
                 'image_id' => 1,
                 'need_posting_image' => true,
+                'guage' => '1.30',
+                'category' => 'ポリエステル',
                 'created_at' => Carbon::now(),
                 'updated_at' => Carbon::now()
             ],
@@ -59,6 +67,8 @@ class GutSeeder extends Seeder
                 'maker_id' => 3,
                 'image_id' => 1,
                 'need_posting_image' => true,
+                'guage' => '1.25/1.30',
+                'category' => 'ポリエステル',
                 'created_at' => Carbon::now(),
                 'updated_at' => Carbon::now()
             ],
@@ -68,6 +78,8 @@ class GutSeeder extends Seeder
                 'maker_id' => 2,
                 'image_id' => 1,
                 'need_posting_image' => true,
+                'guage' => '1.20/1.25/1.30',
+                'category' => 'ポリエステル',
                 'created_at' => Carbon::now(),
                 'updated_at' => Carbon::now()
             ],
@@ -77,6 +89,8 @@ class GutSeeder extends Seeder
                 'maker_id' => 13,
                 'image_id' => 1,
                 'need_posting_image' => true,
+                'guage' => '1.10/1.15/1.20/1.25/1.30',
+                'category' => 'ポリエステル',
                 'created_at' => Carbon::now(),
                 'updated_at' => Carbon::now()
             ],
@@ -86,6 +100,8 @@ class GutSeeder extends Seeder
                 'maker_id' => 13,
                 'image_id' => 1,
                 'need_posting_image' => true,
+                'guage' => '1.25/1.30',
+                'category' => 'ポリエステル',
                 'created_at' => Carbon::now(),
                 'updated_at' => Carbon::now()
             ],
@@ -95,6 +111,8 @@ class GutSeeder extends Seeder
                 'maker_id' => 1,
                 'image_id' => 1,
                 'need_posting_image' => true,
+                'guage' => '1.30',
+                'category' => 'ナチュラル',
                 'created_at' => Carbon::now(),
                 'updated_at' => Carbon::now()
             ],
