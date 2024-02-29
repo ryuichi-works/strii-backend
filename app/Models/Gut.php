@@ -17,7 +17,9 @@ class Gut extends Model
         'name_en',
         'maker_id',
         'image_id',
-        'need_posting_image'
+        'need_posting_image',
+        'guage',
+        'category'
     ];
 
     public static function rules()

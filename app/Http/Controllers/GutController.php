@@ -55,6 +55,8 @@ class GutController extends Controller
                 'maker_id' => $validated['maker_id'],
                 'image_id' => isset($validated['image_id']) ? $validated['image_id'] : $defaultgutImage->id,
                 'need_posting_image' => $validated['need_posting_image'],
+                'guage' => isset($validated['guage']) ? $validated['guage'] : '',
+                'category' => isset($validated['category']) ? $validated['category'] : '',
             ]);
 
             if ($gut) {
@@ -99,16 +101,17 @@ class GutController extends Controller
     {
         $validated = $request->validated();
 
-        
-
         try {
             $gut = Gut::findOrFail($id);
 
             $gut->name_ja = $validated['name_ja'];
             $gut->name_en = $validated['name_en'];
             $gut->maker_id = $validated['maker_id'];
-            $gut->image_id = isset($validated['image_id']) ? $validated['image_id'] : null;
+            $gut->image_id = isset($validated['image_id']) ? $validated['image_id'] : $gut->image_id;
             $gut->need_posting_image = $validated['need_posting_image'];
+            $gut->guage = isset($validated['guage']) ? $validated['guage'] : $gut->guage;
+            $gut->category = isset($validated['category']) ? $validated['category'] : $gut->category;
+
             if ($gut->save()) {
                 return response()->json('ガット情報を更新しました', 200);
             }
