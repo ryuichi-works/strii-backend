@@ -196,32 +196,42 @@ class GutController extends Controller
 
         $maker_id = $request->query('maker');
 
+        $guage = $request->query('guage');
+
+        $category = $request->query('category');
+
         $gutQuery = Gut::query();
 
-        if ($severalWords && $maker_id) {
-            foreach ($severalWordsArray as $word) {
-                //severalWordsで複数取れてきてもmakerが一致しない場合は弾かれる
-                $gutQuery
-                    ->orWhere(function ($gutQuery) use ($word, $maker_id) {
-                        $gutQuery
-                            ->where(function ($gutQuery) use ($word) {
-                                $gutQuery
-                                    ->orWhere('name_ja', 'like', '%' . $word . '%')
-                                    ->orWhere('name_en', 'like', '%' . $word . '%');
-                            })
-                            ->where('maker_id', '=', $maker_id);
-                    });
-            }
-        } elseif ($severalWords && empty($maker_id)) {
-            //makerの指定がないのでseveralWordsのor検索となる
-            foreach ($severalWordsArray as $word) {
-                $gutQuery
-                    ->orWhere('name_ja', 'like', '%' . $word . '%')
-                    ->orWhere('name_en', 'like', '%' . $word . '%');
-            }
-        } elseif (empty($severalWords) && $maker_id) {
-            //makerのみでの検索
-            $gutQuery->where('maker_id', '=', $maker_id);
+        // 太さguageで検索
+        if($guage) {
+            $gutQuery->where(function ($gutQuery) use ($guage) {
+                $gutQuery->where('guage', 'like', "%{$guage}%");
+            });
+        }
+
+        // gutカテゴリーで検索
+        if($category) {
+            $gutQuery->where(function ($gutQuery) use ($category) {
+                $gutQuery->where('category', '=', $category);
+            });
+        }
+
+        // メーカーで検索
+        if ($maker_id) {
+            $gutQuery->where(function ($gutQuery) use ($maker_id) {
+                $gutQuery->where('maker_id', '=', $maker_id);
+            });
+        }
+
+        // キーワード検索
+        if ($severalWords) {
+            $gutQuery->where(function ($gutQuery) use ($severalWordsArray) {
+                foreach ($severalWordsArray as $word) {
+                    $gutQuery
+                        ->orWhere('name_ja', 'like', '%' . $word . '%')
+                        ->orWhere('name_en', 'like', '%' . $word . '%');
+                }
+            });
         }
 
         $searchedGuts = $gutQuery
@@ -232,7 +242,6 @@ class GutController extends Controller
         return response()->json($searchedGuts, 200);
     }
 
-    // public function storeByCsv(Request $request)
     public function storeByCsv(GutStoreByCsvRequest $request)
     {
         try {
