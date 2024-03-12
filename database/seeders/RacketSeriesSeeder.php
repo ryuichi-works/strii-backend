@@ -63,9 +63,9 @@ class RacketSeriesSeeder extends Seeder
         ['ps','ps',11],
         ['パフォーマ','performa',11],
         // スノワート
-        ['グリンタ','grinta',12],
-        ['ヴィタス','vitas',12],
-        ['ハイテン','hi-ten',12],
+        ['グリンタ','grinta',19],
+        ['ヴィタス','vitas',19],
+        ['ハイテン','hi-ten',19],
     ];
 
     
