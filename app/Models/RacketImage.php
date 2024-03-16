@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Intervention\Image\Facades\Image;
+use Illuminate\Support\Facades\Storage;
 
 class RacketImage extends Model
 {
@@ -20,7 +21,7 @@ class RacketImage extends Model
     // dbリレーション関連メソッド
     public function rackets()
     {
-        return $this->hasMany(Racket::class, 'image_id','id');
+        return $this->hasMany(Racket::class, 'image_id', 'id');
     }
 
     public function maker()
@@ -54,24 +55,46 @@ class RacketImage extends Model
 
         $filename = now()->format('YmdHis') . $request['title'] . "." . $request['file']->extension();
 
-        // storageに登録するためのpathを生成
+        // storageに保存するためのpathを生成
         $storagePath = storage_path('app/public/images/rackets');
         $fileLocationFullPath = $storagePath . '/' . $filename;
 
-        if ($file->save($fileLocationFullPath)) {
-            // "/var/www/html/strii-backend/storage/app/public/images/rackets/20240105123954リサイズ確認５.jpg"
-            // intervension image導入前の登録の仕様に合わせるため
-            // 上記のようなfullPathをDBのfile_pathカラム用に整形
-            $trimedFilePath = strstr($fileLocationFullPath, 'images');
+        try {
+            // intervention imageを使っているためstorageフォルダ下に一時的に保存
+            if ($file->save($fileLocationFullPath)) {
+                $filePath = 'images/rackets/' . $filename;
 
-            $racket_image = RacketImage::create([
-                'file_path' => $trimedFilePath,
-                'title' => $request['title'],
-                'maker_id' => $request['maker_id'],
-                'posting_user_id' => $request['posting_user_id'],
-            ]);
+                // 画像をAmazon S3にアップロード
+                if (Storage::disk('s3')->put($filePath, file_get_contents($fileLocationFullPath))) {
+                    // 成功時
+                    // S3上の画像のURLを取得
+                    $s3Url = Storage::disk('s3')->url($filePath);
+                } else {
+                    // 失敗時
+                    throw new Exception('s3への画像アップロードに失敗しました');
+                }
+
+                // データベースにファイルパスを保存などの処理
+                $racket_image = RacketImage::create([
+                    'file_path' => $s3Url,
+                    'title' => $request['title'],
+                    'maker_id' => $request['maker_id'],
+                    'posting_user_id' => $request['posting_user_id'],
+                ]);
+            }
+
+            return $racket_image;
+        } catch (\Throwable $e) {
+            // s3上に画像登録完了していたらそれをclean up
+            if(isset($s3Url)) {
+                $trimedFilePath = strstr($s3Url, 'images');
+                Storage::disk('s3')->delete($trimedFilePath);
+            }
+
+            throw $e;
+        } finally {
+            // storageに一時的に保存していた画像ファイルを削除
+            unlink($fileLocationFullPath);
         }
-
-        return $racket_image;
     }
 }
