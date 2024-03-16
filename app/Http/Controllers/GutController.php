@@ -45,7 +45,8 @@ class GutController extends Controller
         $validated = $request->validated();
 
         if(empty($validated['image_id'])) {
-            $defaultgutImage = GutImage::where('file_path', '=', 'images/guts/default_gut_image.jpg')->get()[0];
+            $appUrl = env('APP_URL');
+            $defaultgutImage = GutImage::where('file_path', '=', "{$appUrl}/storage/images/guts/default_gut_image.png")->get()[0];
         }
 
         try {
