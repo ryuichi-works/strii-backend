@@ -43,44 +43,12 @@ class GutImageController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    // public function store(Request $request)
     public function store(GutImageStoreRequest $request)
     {
         $validated_request = $request->validated();
 
         try {
-            // 画像ファイルリサイジング
-            $file = Image::make($request->file('file'));
-            $file->orientate();
-            $file->resize(
-                560,
-                null,
-                function ($constraint) {
-                    // 縦横比を保持したままにする
-                    $constraint->aspectRatio();
-                    // 小さい画像は大きくしない
-                    $constraint->upsize();
-                }
-            );
-
-            $filename = now()->format('YmdHis') . $validated_request['title'] . "." . $request->file('file')->extension();
-
-            // storageに登録するためのpathを生成
-            $storagePath = storage_path('app/public/images/guts');
-            $fileLocationFullPath = $storagePath . '/' . $filename;
-
-            if ($file->save($fileLocationFullPath)) {
-                // "/var/www/html/strii-backend/storage/app/public/images/guts20240105123954リサイズ確認５.jpg"
-                // intervension image導入前の登録の仕様に合わせるため
-                // 上記のようなfullPathをDBのfile_pathカラム用に整形
-                $trimedFilePath = strstr($fileLocationFullPath, 'images');
-
-                $gut_image = GutImage::create([
-                    'file_path' => $trimedFilePath,
-                    'title' => $validated_request['title'],
-                    'maker_id' => $validated_request['maker_id']
-                ]);
-            }
+            $gut_image = GutImage::registerGutImage($validated_request);
 
             if (isset($gut_image)) {
                 $maker = Maker::find($gut_image->maker_id);
@@ -111,7 +79,7 @@ class GutImageController extends Controller
 
             return response()->json([
                 'id' => $gut_image['id'],
-                'file_path' => Storage::url($gut_image['file_path']),
+                'file_path' => $gut_image['file_path'],
                 'title' => $gut_image['title'],
                 'maker' => $gut_image['maker']
             ]);
@@ -161,15 +129,27 @@ class GutImageController extends Controller
                 $fileLocationFullPath = $storagePath . '/' . $filename;
 
                 if ($file->save($fileLocationFullPath)) {
-                    // "/var/www/html/strii-backend/storage/app/public/images/guts20240105123954リサイズ確認５.jpg"
-                    // intervension image導入前の登録の仕様に合わせるため
-                    // 上記のようなfullPathをDBのfile_pathカラム用に整形
-                    $trimedFilePath = strstr($fileLocationFullPath, 'images');
+                    // 画像をAmazon S3にアップロード用urlに整形
+                    $filePath = 'images/guts/' . $filename;
 
-                    //以前のイメージファイルをstorageフォルダから削除
-                    Storage::disk('public')->delete($image->file_path);
+                    // s3へアップロード
+                    if (Storage::disk('s3')->put($filePath, file_get_contents($fileLocationFullPath))) {
+                        // 成功時
+                        // S3上の画像のURLを取得
+                        $s3Url = Storage::disk('s3')->url($filePath);
 
-                    $image->file_path = $trimedFilePath;
+                        // 以前のpathを保管しておく
+                        $previousFilePath = $image->file_path;
+
+                        // 更新用の新しいurlを格納
+                        $image->file_path = $s3Url;
+                    } else {
+                        // 失敗時
+                        // 一時保存していたファイルを削除
+                        unlink($fileLocationFullPath);
+
+                        throw new Exception('s3への画像アップロードに失敗しました');
+                    }
                 }
             }
 
@@ -177,11 +157,18 @@ class GutImageController extends Controller
             $image->maker_id = $validated_request['maker_id'];
 
             if ($image->save()) {
+                if ($request->file('file') && $s3Url) {
+                    // s3上の以前の画像を削除(strstr()はurlの整形)
+                    $trimedFilePath = strstr($previousFilePath, 'images');
+                    Storage::disk('s3')->delete($trimedFilePath);
+                    unlink($fileLocationFullPath);
+                }
+
                 $maker = Maker::find($image->maker_id);
 
                 return response()->json([
                     'id' => $image['id'],
-                    'file_path' => Storage::url($image['file_path']),
+                    'file_path' => $image['file_path'],
                     'title' => $image['title'],
                     'maker' => $maker
                 ], 200);
@@ -204,11 +191,18 @@ class GutImageController extends Controller
         try {
             $image = GutImage::findOrFail($id);
 
-            Storage::disk('public')->delete($image->file_path);
+            // file_pathが下記の様に登録してある
+            // https://strii-bucket.s3.ap-northeast-1.amazonaws.com/images/guts/20240313003254〜〜〜.jpg
+            // これを『images/rackets/20240313003254〜〜〜.jpg』の様に整形する
+            $trimedFilePath = strstr($image->file_path, 'images');
 
-            $image->delete();
+            if (Storage::disk('s3')->delete($trimedFilePath)) {
+                $image->delete();
 
-            return response()->json("{$image['title']}の画像を削除しました", 200);
+                return response()->json("{$image['title']}の画像を削除しました", 200);
+            } else {
+                throw new Exception("画像の削除に失敗しました");
+            }
         } catch (ModelNotFoundException $e) {
             throw $e;
         } catch (\Throwable $e) {
