@@ -60,7 +60,7 @@ class UserController extends Controller
         try {
             $user = User::findOrFail($id);
 
-            //新しいファイルがあれば新たにstorageに登録
+            //新しいファイルがあれば新たに登録
             if ($file = $request->file('file')) {
 
                 // 画像ファイルリサイジング
@@ -84,17 +84,27 @@ class UserController extends Controller
                 $fileLocationFullPath = $storagePath . '/' . $filename;
 
                 if ($file->save($fileLocationFullPath)) {
-                    // "/var/www/html/strii-backend/storage/app/public/images/users/~~~.jpg"
-                    // intervension image導入前の登録の仕様に合わせるため
-                    // 上記のようなfullPathをDBのfile_pathカラム用に整形
-                    $trimedFilePath = strstr($fileLocationFullPath, 'images');
+                    // 画像をAmazon S3にアップロード用urlに整形
+                    $filePath = 'images/users/' . $filename;
 
-                    //以前のイメージファイルがあればstorageフォルダから削除
-                    if ($user->file_path) {
-                        Storage::disk('public')->delete($user->file_path);
+                    // s3へアップロード
+                    if (Storage::disk('s3')->put($filePath, file_get_contents($fileLocationFullPath))) {
+                        // 成功時
+                        // S3上の画像のURLを取得
+                        $s3Url = Storage::disk('s3')->url($filePath);
+
+                        // 以前のpathがあれば保管しておく
+                        $previousFilePath = $user->file_path;
+
+                        // 更新用の新しいurlを格納
+                        $user->file_path = $s3Url;
+                    } else {
+                        // 失敗時
+                        // 一時保存していたファイルを削除
+                        unlink($fileLocationFullPath);
+
+                        throw new Exception('s3への画像アップロードに失敗しました');
                     }
-
-                    $user->file_path = $trimedFilePath;
                 }
             }
 
@@ -102,6 +112,11 @@ class UserController extends Controller
             $user->email = $validated['email'];
 
             if ($user->save()) {
+                // s3に以前の画像があれば削除(strstr()はurlを整形)
+                if (isset($previousFilePath) && Storage::disk('s3')->exists(strstr($previousFilePath, 'images'))) {
+                    Storage::disk('s3')->delete(strstr($previousFilePath, 'images'));
+                }
+
                 return response()->json('ユーザー情報を更新しました', 200);
             }
         } catch (\ModelNotFoundException $e) {
@@ -109,7 +124,18 @@ class UserController extends Controller
         } catch (\Throwable $e) {
             \Log::error($e);
 
+            // s3上に画像登録完了していたらそれをclean up
+            if (isset($s3Url)) {
+                $trimedFilePath = strstr($s3Url, 'images');
+                Storage::disk('s3')->delete($trimedFilePath);
+            }
+
             throw $e;
+        } finally {
+            // 一時保存ファイルがあれば削除
+            if ($request->file('file') && $s3Url) {
+                unlink($fileLocationFullPath);
+            }
         }
     }
 
