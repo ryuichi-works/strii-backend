@@ -76,6 +76,7 @@ class RacketController extends Controller
                 'pattern' => $validated['pattern'],
                 'weight' => isset($validated['weight']) ? $validated['weight'] : null,
                 'balance' => isset($validated['balance']) ? $validated['balance'] : null,
+                'release_year' => isset($validated['release_year']) ? $validated['release_year'] : null,
             ]);
 
             DB::commit();
@@ -150,6 +151,7 @@ class RacketController extends Controller
             $racket->pattern   = isset($validated['pattern']) ? $validated['pattern'] : $racket->pattern;
             $racket->weight    = isset($validated['weight']) ? $validated['weight'] : $racket->weight;
             $racket->balance   = isset($validated['balance']) ? $validated['balance'] : $racket->balance;
+            $racket->release_year   = isset($validated['release_year']) ? $validated['release_year'] : $racket->release_year;
 
             if ($racket->save()) {
                 return response()->json('ラケット情報を更新しました', 200);

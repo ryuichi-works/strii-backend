@@ -22,6 +22,7 @@ class Racket extends Model
         'weight',
         'balance',
         'agreement',
+        'release_year'
     ];
 
     public function maker()

@@ -29,6 +29,7 @@ class RacketSeeder extends Seeder
                 'pattern' => '16/19',
                 'weight' => 300,
                 'balance' => 320,
+                'release_year'=> 2021,
                 'created_at' => Carbon::now(),
                 'updated_at' => Carbon::now()
             ],
@@ -44,6 +45,7 @@ class RacketSeeder extends Seeder
                 'pattern' => '16/19',
                 'weight' => null,
                 'balance' => null,
+                'release_year'=> 2021,
                 'created_at' => Carbon::now(),
                 'updated_at' => Carbon::now()
             ],
@@ -59,6 +61,7 @@ class RacketSeeder extends Seeder
                 'pattern' => '16/19',
                 'weight' => null,
                 'balance' => null,
+                'release_year'=> 2021,
                 'created_at' => Carbon::now(),
                 'updated_at' => Carbon::now()
             ],
@@ -74,6 +77,7 @@ class RacketSeeder extends Seeder
                 'pattern' => '16/19',
                 'weight' => null,
                 'balance' => null,
+                'release_year'=> 2022,
                 'created_at' => Carbon::now(),
                 'updated_at' => Carbon::now()
             ],
@@ -91,6 +95,7 @@ class RacketSeeder extends Seeder
                 'pattern' => '16/19',
                 'weight' => null,
                 'balance' => null,
+                'release_year'=> 2022,
                 'created_at' => Carbon::now(),
                 'updated_at' => Carbon::now()
             ],
@@ -106,6 +111,7 @@ class RacketSeeder extends Seeder
                 'pattern' => '16/19',
                 'weight' => null,
                 'balance' => null,
+                'release_year'=> 2022,
                 'created_at' => Carbon::now(),
                 'updated_at' => Carbon::now()
             ],
@@ -121,6 +127,7 @@ class RacketSeeder extends Seeder
                 'pattern' => '16/19',
                 'weight' => null,
                 'balance' => null,
+                'release_year'=> 2023,
                 'created_at' => Carbon::now(),
                 'updated_at' => Carbon::now()
             ],
@@ -136,6 +143,7 @@ class RacketSeeder extends Seeder
                 'pattern' => '16/19',
                 'weight' => null,
                 'balance' => null,
+                'release_year'=> 2023,
                 'created_at' => Carbon::now(),
                 'updated_at' => Carbon::now()
             ],
@@ -151,6 +159,7 @@ class RacketSeeder extends Seeder
                 'pattern' => '16/19',
                 'weight' => null,
                 'balance' => null,
+                'release_year'=> 2024,
                 'created_at' => Carbon::now(),
                 'updated_at' => Carbon::now()
             ],

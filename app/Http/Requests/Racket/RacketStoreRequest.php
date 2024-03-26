@@ -37,6 +37,7 @@ class RacketStoreRequest extends FormRequest
             'pattern' => ['required', 'string', 'max:15'],
             'weight' => ['nullable', 'integer', 'max:400'],
             'balance' => ['nullable', 'integer', 'max:400'],
+            'release_year' => ['nullable', 'integer', 'max:3000'],
             'agreement' => ['required', 'boolean', new AgreementConfirmation],
             
             // ラケット画像を同時に登録するため個別で必要
