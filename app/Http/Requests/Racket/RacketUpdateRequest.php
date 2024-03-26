@@ -35,6 +35,7 @@ class RacketUpdateRequest extends FormRequest
             'pattern' => ['nullable', 'string', 'max:15'],
             'weight' => ['nullable', 'integer', 'max:400'],
             'balance' => ['nullable', 'integer', 'max:400'],
+            'release_year' => ['nullable', 'integer', 'max:3000'],
         ];
     }
 }
