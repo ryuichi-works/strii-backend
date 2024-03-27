@@ -1,0 +1,8 @@
+build:
+  docker:
+    web: Dockerfile
+run: 
+  web: |
+    sed -ri -e 's!/var/www/html!/var/www/html/strii/public!g' /etc/apache2/sites-available/*.conf
+    apache2-foreground
+

@@ -14,7 +14,15 @@ class Racket extends Model
         'name_en',
         'maker_id',
         'image_id',
-        'need_posting_image'
+        'need_posting_image',
+        'posting_user_id',
+        'series_id',
+        'head_size',
+        'pattern',
+        'weight',
+        'balance',
+        'agreement',
+        'release_year'
     ];
 
     public function maker()
@@ -35,5 +43,15 @@ class Racket extends Model
     public function myEquipments()
     {
         return $this->hasMany(MyEquipment::class);
+    }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'posting_user_id', 'id');
+    }
+
+    public function series()
+    {
+        return $this->belongsTo(RacketSeries::class, 'series_id', 'id');
     }
 }

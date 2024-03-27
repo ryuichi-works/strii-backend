@@ -25,7 +25,12 @@ class MyEquipmentController extends Controller
     public function index()
     {
         try {
-            $my_equipment = MyEquipment::with(['user', 'mainGut', 'crossGut'])->paginate(8);
+            $my_equipment = MyEquipment::with([
+                'user',
+                'racket' => ['maker', 'racketImage'],
+                'mainGut' => ['maker', 'gutImage'],
+                'crossGut' => ['maker', 'gutImage']
+            ])->paginate(8);
 
             return response()->json($my_equipment, 200);
         } catch (\Throwable $e) {

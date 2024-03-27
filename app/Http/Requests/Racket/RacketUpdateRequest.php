@@ -24,11 +24,18 @@ class RacketUpdateRequest extends FormRequest
     public function rules()
     {
         return [
-            'name_ja' => ['required', 'max:30'],
-            'name_en' => ['max:30'],
-            'maker_id' => ['required', 'integer', 'exists:makers,id'],
-            'image_id' => ['sometimes', 'integer', 'exists:racket_images,id'],
-            'need_posting_image' => ['required','boolean']
+            'name_ja' => ['nullable', 'string', 'max:30'],
+            'name_en' => ['nullable', 'string','max:30'],
+            'maker_id' => ['nullable', 'integer', 'exists:makers,id'],
+            'image_id' => ['nullable', 'integer', 'exists:racket_images,id'],
+            'need_posting_image' => ['nullable','boolean'],
+            'posting_user_id' => ['nullable', 'integer', 'exists:users,id'],
+            'series_id' => ['nullable', 'integer', 'exists:racket_series,id'],
+            'head_size' => ['nullable', 'integer', 'max:150'],
+            'pattern' => ['nullable', 'string', 'max:15'],
+            'weight' => ['nullable', 'integer', 'max:400'],
+            'balance' => ['nullable', 'integer', 'max:400'],
+            'release_year' => ['nullable', 'integer', 'max:3000'],
         ];
     }
 }

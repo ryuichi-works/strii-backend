@@ -17,18 +17,13 @@ class GutImageSeeder extends Seeder
      */
     public function run()
     {
+        $appUrl = env("APP_URL");
+        
         DB::table('gut_images')->insert([
             [
-                'file_path' => 'images/guts/sample_image1.png',
-                'title' => 'ポリツアープロ',
-                'maker_id' => 1,
-                'created_at' => Carbon::now(),
-                'updated_at' => Carbon::now()
-            ],
-            [
-                'file_path' => 'images/guts/sample_image2.jpg',
-                'title' => 'ポリツアープロ',
-                'maker_id' => 1,
+                'file_path' => "{$appUrl}/storage/images/guts/default_gut_image.png",
+                'title' => 'デフォルト',
+                'maker_id' => null,
                 'created_at' => Carbon::now(),
                 'updated_at' => Carbon::now()
             ],

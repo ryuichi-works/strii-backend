@@ -1,14 +1,11 @@
+###
+# このdocker-compose.ymlの内容はdocker-compose.develop.ymlとdocker-compose.production.ymlをコピーして使い分けられるものである
+# ペーストする際はこのコメントを残し、コメント以下にペーストすること
+# 使用した後はdocker-compose.develop.ymlをコピーし直してdevelop環境に戻すことを忘れないこと
+###
 version: '3.8'
 
 services:
-  # web-front:
-  #   build: ./docker/node
-  #   container_name: web-front
-  #   ports:
-  #     - 3000:3000
-  #   volumes:
-  #     - ./src/frontend:/app
-  #   tty: true
   web_backend:
     build: ./docker/php
     container_name: web_backend
@@ -42,5 +39,6 @@ services:
       # - ./db/my.cnf:/etc/mysql/conf.d/my.cnf
       - ./docker/db/data:/var/lib/mysql
       - ./docker/db/my.cnf:/etc/mysql/conf.d/my.cnf
+      - ./docker/csv:/var/lib/mysql-files/csv
     ports:
       - 3306:3306

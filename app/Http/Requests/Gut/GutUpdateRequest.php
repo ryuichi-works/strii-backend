@@ -28,7 +28,9 @@ class GutUpdateRequest extends FormRequest
             'name_en' => ['max:30'],
             'maker_id' => ['required', 'integer', 'exists:makers,id'],
             'image_id' => ['sometimes', 'integer', 'exists:gut_images,id'],
-            'need_posting_image' => ['required','boolean']
+            'need_posting_image' => ['required','boolean'],
+            'guage' => ['max:30'],
+            'category' => ['max:30'],
         ];
     }
 }

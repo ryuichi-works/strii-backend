@@ -2,17 +2,21 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Middleware\CheckRegistrationLimitOfRacket;
 use Illuminate\Http\Request;
 use App\Models\Racket;
 use App\Http\Requests\Racket\RacketStoreRequest;
 use App\Http\Requests\Racket\RacketUpdateRequest;
+use App\Models\RacketImage;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class RacketController extends Controller
 {
     public function __construct()
     {
-        $this->middleware('auth:admin')->only(['store', 'update', 'destroy']);
+        $this->middleware('auth:admin')->only(['update', 'destroy']);
+        $this->middleware(CheckRegistrationLimitOfRacket::class)->only('store');
     }
 
     /**
@@ -23,7 +27,12 @@ class RacketController extends Controller
     public function index()
     {
         try {
-            $rackets = Racket::with(['maker', 'racketImage'])->paginate(8);
+            $rackets = Racket::with([
+                'maker',
+                'racketImage',
+                'user',
+                'series'
+            ])->paginate(8);
 
             return response()->json($rackets, 200);
         } catch (\Throwable $e) {
@@ -44,18 +53,47 @@ class RacketController extends Controller
         $validated = $request->validated();
 
         try {
-            $racket = Racket::create([
+            DB::beginTransaction();
+
+            // RacketImageモデルを使ってラケット画像を登録
+            $racketImage = RacketImage::registerRacketImage($validated);
+            
+
+            $racket = Racket::with([
+                'maker',
+                'racketImage',
+                'user',
+                'series'
+            ])->create([
                 'name_ja' => $validated['name_ja'],
-                'name_en' => $validated['name_en'],
+                'name_en' => isset($validated['name_en']) ? $validated['name_en'] : '',
                 'maker_id' => $validated['maker_id'],
-                'image_id' => isset($validated['image_id']) ? $validated['image_id'] : null,
+                'image_id' => $racketImage->id,
                 'need_posting_image' => $validated['need_posting_image'],
+                'posting_user_id' => $validated['posting_user_id'],
+                'series_id' => isset($validated['series_id']) ? $validated['series_id'] : null,
+                'head_size' => isset($validated['head_size']) ? $validated['head_size'] : null,
+                'pattern' => $validated['pattern'],
+                'weight' => isset($validated['weight']) ? $validated['weight'] : null,
+                'balance' => isset($validated['balance']) ? $validated['balance'] : null,
+                'release_year' => isset($validated['release_year']) ? $validated['release_year'] : null,
             ]);
 
+            DB::commit();
+
+            
             if ($racket) {
-                return response()->json('ラケットを登録しました', 200);
+                $responseRacket = Racket::with([
+                    'maker',
+                    'racketImage',
+                    'user',
+                    'series',
+                ])->findOrFail($racket->id);
+                return response()->json($responseRacket, 200);
             }
         } catch (\Throwable $e) {
+            DB::rollBack();
+
             \Log::error($e);
 
             throw $e;
@@ -71,7 +109,12 @@ class RacketController extends Controller
     public function show($id)
     {
         try {
-            $racket = Racket::with(['maker', 'racketImage'])->findOrFail($id);
+            $racket = Racket::with([
+                'maker',
+                'racketImage',
+                'user',
+                'series',
+            ])->findOrFail($id);
 
             return response()->json($racket, 200);
         } catch (\ModelNotFoundException $e) {
@@ -97,11 +140,18 @@ class RacketController extends Controller
         try {
             $racket = Racket::findOrFail($id);
 
-            $racket->name_ja = $validated['name_ja'];
-            $racket->name_en = $validated['name_en'];
-            $racket->maker_id = $validated['maker_id'];
-            $racket->image_id = isset($validated['image_id']) ? $validated['image_id'] : null;
-            $racket->need_posting_image = $validated['need_posting_image'];
+            $racket->name_ja  = isset($validated['name_ja']) ? $validated['name_ja'] : $racket->name_ja;
+            $racket->name_en  = isset($validated['name_en']) ? $validated['name_en'] : $racket->name_en;
+            $racket->maker_id = isset($validated['maker_id']) ? $validated['maker_id'] : $racket->maker_id;
+            $racket->image_id = isset($validated['image_id']) ? $validated['image_id'] : $racket->image_id;
+            $racket->need_posting_image = isset($validated['need_posting_image']) ? $validated['need_posting_image'] : $racket->need_posting_image;
+            $racket->posting_user_id = isset($validated['posting_user_id']) ? $validated['posting_user_id'] : $racket->posting_user_id;
+            $racket->series_id = isset($validated['series_id']) ? $validated['series_id'] : $racket->series_id;
+            $racket->head_size = isset($validated['head_size']) ? $validated['head_size'] : $racket->head_size;
+            $racket->pattern   = isset($validated['pattern']) ? $validated['pattern'] : $racket->pattern;
+            $racket->weight    = isset($validated['weight']) ? $validated['weight'] : $racket->weight;
+            $racket->balance   = isset($validated['balance']) ? $validated['balance'] : $racket->balance;
+            $racket->release_year   = isset($validated['release_year']) ? $validated['release_year'] : $racket->release_year;
 
             if ($racket->save()) {
                 return response()->json('ラケット情報を更新しました', 200);
@@ -172,8 +222,6 @@ class RacketController extends Controller
         return response()->json($responseRackets, 200);
     }
 
-
-
     public function racketSearch(Request $request)
     {
         $severalWords = $request->query('several_words');
@@ -187,39 +235,79 @@ class RacketController extends Controller
         }
 
         $maker_id = $request->query('maker');
+        $series_id = $request->query('series_id');
+        $head_size = $request->query('head_size');
+        $pattern = $request->query('pattern');
+        $weight = $request->query('weight');
+        $balance = $request->query('balance');
 
         $racketQuery = Racket::query();
 
-        if ($severalWords && $maker_id) {
-            foreach ($severalWordsArray as $word) {
-                //severalWordsで複数取れてきてもmakerが一致しない場合は弾かれる
-                $racketQuery
-                    ->orWhere(function ($racketQuery) use ($word, $maker_id) {
-                        $racketQuery
-                            ->where(function ($racketQuery) use ($word, $maker_id) {
-                                $racketQuery
-                                    ->orWhere('name_ja', 'like', '%' . $word . '%')
-                                    ->orWhere('name_en', 'like', '%' . $word . '%');
-                            })
-                            ->where('maker_id', '=', $maker_id);
-                    });
-            }
-        } elseif ($severalWords && empty($maker_id)) {
-            //makerの指定がないのでseveralWordsのor検索となる
-            foreach ($severalWordsArray as $word) {
-                $racketQuery
-                    ->orWhere('name_ja', 'like', '%' . $word . '%')
-                    ->orWhere('name_en', 'like', '%' . $word . '%');
-            }
-        } elseif (empty($severalWords) && $maker_id) {
-            //makerのみでの検索
-            $racketQuery->where('maker_id', '=', $maker_id);
+        // メーカーで検索
+        if ($maker_id) {
+            $racketQuery->where(function ($racketQuery) use ($maker_id) {
+                $racketQuery->where('maker_id', '=', $maker_id);
+            });
+        }
+
+        // ラケットシリーズで検索
+        if ($series_id) {
+            $racketQuery->where(function ($racketQuery) use ($series_id) {
+                $racketQuery->where('series_id', '=', $series_id);
+            });
+        }
+
+        // ヘッドサイズで検索
+        if ($head_size) {
+            $racketQuery->where(function ($racketQuery) use ($head_size) {
+                $racketQuery->where('head_size', '=', $head_size);
+            });
+        }
+
+        // ストリングパターンで検索
+        if ($pattern) {
+            $racketQuery->where(function ($racketQuery) use ($pattern) {
+                $racketQuery->where('pattern', '=', $pattern);
+            });
+        }
+
+        // 重さで検索
+        if ($weight) {
+            $racketQuery->where(function ($racketQuery) use ($weight) {
+                $racketQuery->where('weight', '=', $weight);
+            });
+        }
+
+        // バランスポイントで検索
+        if ($balance) {
+            $racketQuery->where(function ($racketQuery) use ($balance) {
+                $racketQuery->where('balance', '=', $balance);
+            });
+        }
+
+        // キーワード検索
+        if ($severalWords) {
+            $racketQuery->where(function ($racketQuery) use ($severalWordsArray) {
+                foreach ($severalWordsArray as $word) {
+                    $racketQuery
+                        ->orWhere('name_ja', 'like', '%' . $word . '%')
+                        ->orWhere('name_en', 'like', '%' . $word . '%');
+                }
+            });
         }
 
         $searchedRackets = $racketQuery
             ->with(['maker', 'racketImage'])
             ->paginate(8)
-            ->appends(['several_words' => $severalWords, 'maker' => $maker_id]);
+            ->appends([
+                'several_words' => $severalWords,
+                'maker' => $maker_id,
+                'series_id' => $series_id,
+                'head_size' => $head_size,
+                'pattern' => $pattern,
+                'weight' => $weight,
+                'balance' => $balance,
+            ]);
 
         return response()->json($searchedRackets, 200);
     }
