@@ -35,6 +35,8 @@ COPY tests/ ./tests/
 COPY vendor/ ./vendor/
 COPY .editorconfig .gitattributes .gitignore apache-start.sh artisan composer.json composer.lock docker-compose.yml Dockerfile heroku.yml phpunit.xml README.md  ./
 
+COPY docker/php/php.production.ini /usr/local/etc/php/php.ini
+
 COPY --from=composer:2.5 /usr/bin/composer /usr/bin/composer
 
 RUN sed -ri -e 's!/var/www/html!/var/www/html/public!g' /etc/apache2/sites-available/*.conf
